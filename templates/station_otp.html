@@ -48,21 +48,19 @@
 				<div class="card">
 					<div class="card-body">
 						<h4>Station change Password(OTP)</h4>
-
 						<div class="container">
 							<div class="row justify-content-center">
-								<form>
+								<form method="POST" action="/admin_verify">
 									<div class="mb-3" style="margin-top: 30px">
 										<label class="form-label">Enter Your Received OTP</label>
 										<input
 											type="text"
 											class="form-control"
-											name="name"
+											name="admin_otp"
 											placeholder="Enter OTP"
 											required
 										/>
 									</div>
-
 									<div class="row justify-content-center">
 										<button type="submit" id="button1" class="btn btn-primarys">Submit</button>
 									</div>

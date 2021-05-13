@@ -1,7 +1,7 @@
 from flask import *
 from flask.wrappers import Request
 from flask_sqlalchemy import SQLAlchemy
-import os
+import os,random,re
 from passlib.hash import sha256_crypt
 from flask_mail import Mail,Message
 
@@ -13,8 +13,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = "emailspambot69@gmail.com"
-app.config['MAIL_PASSWORD'] = "thenightwemet1"
+app.config['MAIL_USERNAME'] = "bookezy13@gmail.com"
+app.config['MAIL_PASSWORD'] = "pradeep13"
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 
@@ -92,7 +92,11 @@ def stationdash():
 
 @app.route("/stationlist")
 def stationlist():
-    return render_template('station_list.html')
+    if 'mainadmin' in session:
+        data = Station.query.all()
+        return render_template('station_list.html',data=data)
+    else:
+        return redirect(url_for('adminlog'))
 
 @app.route("/trainreg")
 def trainreg():
@@ -190,6 +194,7 @@ def mainadmin_log():
         email = request.form['email']
         password = request.form['password']
         if email == 'mainadmin@gmail.com' and password == '1234567890':
+            session['mainadmin'] = True
             flash('Login Successfull','success')
             return redirect(url_for('admdash'))
         else:
@@ -199,37 +204,40 @@ def mainadmin_log():
 @app.route("/reg_station",methods=['POST'])
 def reg_station():
     if request.method == 'POST':
-        name_station = request.form['station_name']
-        station_location = request.form['station_location']
-        station_code = request.form['station_code']
-        admin_name = request.form['admin_name']
-        email = request.form['email']
-        phno = request.form['phno']
-        station_check = Station.query.filter_by(station_name = name_station).first()
-        if not station_check:
-            email_check = Station.query.filter_by(email = email).first()
-            if not email_check:
-                phno_check = Station.query.filter_by(phone = phno).first()
-                if not phno_check:
-                    hash_pass = sha256_crypt.hash(phno)
-                    station = Station(station_name = name_station, station_location = station_location, station_pincode = station_code, name = admin_name, email = email, phone = phno, password = hash_pass)
-                    db.session.add(station)
-                    db.session.commit()
-                    msg = Message("Registration Confirmation",sender="emailspambot69@gmail.com",recipients=[email])
-                    message = "Your station was registered successfully"
-                    msg.body = message
-                    mail.send(msg)
-                    flash('Station registered successfully','success')
-                    return redirect(url_for('admdash'))
+        if 'mainadmin' in session:
+            name_station = request.form['station_name']
+            station_location = request.form['station_location']
+            station_code = request.form['station_code']
+            admin_name = request.form['admin_name']
+            email = request.form['email']
+            phno = request.form['phno']
+            station_check = Station.query.filter_by(station_name = name_station).first()
+            if not station_check:
+                email_check = Station.query.filter_by(email = email).first()
+                if not email_check:
+                    phno_check = Station.query.filter_by(phone = phno).first()
+                    if not phno_check:
+                        hash_pass = sha256_crypt.hash(phno)
+                        station = Station(station_name = name_station, station_location = station_location, station_pincode = station_code, name = admin_name, email = email, phone = phno, password = hash_pass)
+                        db.session.add(station)
+                        db.session.commit()
+                        msg = Message("Registration Confirmation",sender="bookezy13@gmail.com",recipients=[email])
+                        msg.body = "Your station was registered successfully"
+                        mail.send(msg)
+                        flash('Station registered successfully','success')
+                        return redirect(url_for('admdash'))
+                    else:
+                        flash('Admin phone number already used','error')
+                        return redirect(url_for('stationreg'))
                 else:
-                    flash('Admin phone number already used','error')
+                    flash('Admin Mail ID already used','error')
                     return redirect(url_for('stationreg'))
             else:
-                flash('Admin Mail ID already used','error')
+                flash('Station name already registered','error')
                 return redirect(url_for('stationreg'))
         else:
-            flash('Station name already registered','error')
-            return redirect(url_for('stationreg'))
+            flash("Please login as the main admin to do so","error")
+            return redirect(url_for('adminlog'))
 
 @app.route("/logout")
 def logout():
@@ -237,9 +245,156 @@ def logout():
     flash('Logged out successfully',"success")
     return redirect(url_for("home"))
 
+@app.route("/log_admin",methods=['POST'])
+def log_admin():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        response = Station.query.filter_by(email=email).first()
+        if not response:
+            flash("Email ID not registered",'error')
+            return redirect(url_for("stationlog"))
+        else:
+            checkpass = sha256_crypt.verify(password,response.password)
+            if email == response.email and checkpass == True:
+                session['admin'] = True
+                flash('You were successfully logged in',"success")
+                return redirect(url_for("stationdash"))
+            else:
+                flash('Invalid Credentials',"error")
+                return redirect(url_for("stationlog"))
 
+@app.route("/admin_send_otp",methods=['POST'])
+def admin_send_otp():
+    if request.method == 'POST':
+        email = request.form['email']
+        email_check = Station.query.filter_by(email=email).first()
+        if email_check:
+            session['station'] = True
+            session['email'] = email_check.email
+            otp = random.randint(000000,999999)
+            session['otp'] = otp
+            msg = Message('OTP for Password change',sender="bookezy13@gmail.com",recipients=[email])
+            msg.body = "Dear User, your verification code is: " + str(otp)
+            mail.send(msg)
+            flash("OTP sent","success")
+            return redirect(url_for("station_otp"))
+        else:
+            flash("Email ID not registered. Please contact Main Admin","error")
+            return redirect(url_for('stationlog'))
 
+@app.route('/admin_verify',methods=['POST'])
+def admin_verify():
+    if request.method == "POST":
+        if 'station' in session:
+            admin_otp = request.form['admin_otp']
+            if session['otp'] == int(admin_otp):
+                return redirect(url_for("station_forpass_form"))
+            else:
+                flash("Wrong OTP. Please try again","error")
+                return redirect(url_for("station_otp"))
+        else:
+            flash("Session Expired","error")
+            return redirect(url_for('stationlog'))
 
+@app.route('/change_admin_pass',methods=['POST'])
+def change_admin_pass():
+    if request.method == "POST":
+        if 'station' in session:
+            pass1 = request.form['pass1']
+            flag = 0
+            while True:  
+                if (len(pass1)<8):
+                    flag = -1
+                    break
+                elif not re.search("[a-z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[A-Z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[0-9]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[_@$]", pass1):
+                    flag = -1
+                    break
+                elif re.search("\\s", pass1):
+                    flag = -1
+                    break
+                else:
+                    flag = 0
+                    break
+            if flag ==-1:
+                flash("Not a Valid Password","error")
+                return redirect(url_for("station_forpass_form"))
+            pass2 = request.form['pass2']
+            if pass1 == pass2:
+                hash_pass = sha256_crypt.hash(pass1)
+                data = Station.query.filter_by(email=session['email']).first()
+                data.password = hash_pass
+                db.session.commit()
+                session.pop('station',None)
+                session.pop('email',None)
+                flash("Password changed successfully","success")
+                return redirect(url_for("stationlog"))
+            else:
+                flash("Passwords dont match",'error')
+                return redirect(url_for('station_forpass_form'))
+        else:
+            flash("Session Expired","error")
+            return redirect(url_for('stationlog'))
+            
+@app.route('/change_station_pass',methods=['POST'])
+def change_station_pass():
+    if request.method == 'POST':
+        if 'admin' in session:
+            name = request.form['name']
+            pass1 = request.form['pass1']
+            flag = 0
+            while True:  
+                if (len(pass1)<8):
+                    flag = -1
+                    break
+                elif not re.search("[a-z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[A-Z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[0-9]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[_@$]", pass1):
+                    flag = -1
+                    break
+                elif re.search("\\s", pass1):
+                    flag = -1
+                    break
+                else:
+                    flag = 0
+                    break
+            if flag ==-1:
+                flash("Not a Valid Password","error")
+                return redirect(url_for("changepass_station"))
+            pass2 = request.form['pass2']
+            if pass1 == pass2:
+                name_check = Station.query.filter_by(station_name=name).first()
+                if name_check:
+                    hash_pass = sha256_crypt.hash(pass1)
+                    name_check.password = hash_pass
+                    db.session.commit()
+                    flash("Password changed successfully","success")
+                    return redirect(url_for("stationdash"))
+                else:
+                    flash("Check your station name and try again","error")
+                    return redirect(url_for("changepass_station"))
+            else:
+                flash("Passwords dont match",'error')
+                return redirect(url_for('changepass_station'))
+        else:
+            flash("Session Expired","error")
+            return redirect(url_for('stationlog'))
 
 if __name__ == '__main__':
     app.run(debug=True,port=9876)

@@ -52,14 +52,16 @@
 			</tr>
 		</thead>
 		<tbody>
+			{% for i in data %}
 			<tr>
-				<td>Mark</td>
-				<td>Otto</td>
-				<td>@mdo</td>
-				<td>Mark</td>
-				<td>Otto</td>
-				<td>@mdo</td>
+				<td>{{i.station_name}}</td>
+				<td>{{i.station_location}}</td>
+				<td>{{i.station_pincode}}</td>
+				<td>{{i.name}}</td>
+				<td>{{i.email}}</td>
+				<td>{{i.phone}}</td>
 			</tr>
+			{% endfor %}
 		</tbody>
 	</table>
 </div>
