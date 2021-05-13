@@ -1,0 +1,119 @@
+{% extends "user_layout.html" %}
+<!--title part-->
+{% block title %}User dash{% endblock %}
+<!--head part-->
+{% block head %} {{ super() }}
+<style>
+#img{
+  height: 250px;
+ 
+}
+#img1{
+  height: 235px;
+}
+.card-title{
+  text-align: center;
+  font-family: Bahnschrift SemiBold;
+  font-size: 25px;
+}
+@media (min-width: 300px) and (max-width: 350px) {
+  #card1 {
+    margin-top: 20px;
+   
+  }
+ 
+
+}
+/*meduim mobile phones*/
+@media (min-width: 350px) and (max-width: 400px) {
+  #card1 {
+    margin-top: 20px;
+   
+  }
+ 
+}
+/*large mobile phones*/
+@media (min-width: 400px) and (max-width: 500px) {
+  #card1 {
+    margin-top: 20px;
+   
+  }
+}
+/*tablet*/
+
+/*tablet mode*/
+@media (min-width: 600px) and (max-width: 800px) {
+  
+ .card-title{
+   font-size: 20px;
+ }
+}
+@media (min-width: 800px) and (max-width: 1050px) {
+  
+ 
+}
+#borderless td, #borderless th {
+    border: none;
+}
+</style>
+{% endblock %}
+<!--content part-->
+{% block content %}
+
+<div class="container" style="margin-top: 70px;">
+  <div class="row ">
+    <div class="col-sm-4">
+      <div class="card " id="card1" >
+        <img src="{{url_for('static', filename='pers.jpg')}}" class="card-img-top" alt="not found" id="img1">
+        <div class="card-body">
+          <div class="table-responsive">
+          <table class="table table-borderless" id="borderless" style="border-collapse:collapse;">
+            <tbody>
+                <tr>
+                  <th class="a1">Name</th>
+                 <td class="b">Adithya</td>
+              </tr>
+              <tr>
+                <th class="a1">E-mail:</th>
+                <td class="b">harshith@gmail.com</td>
+              </tr>
+              
+              <tr style="border-bottom:none">
+                  <th class="a1">Phone:</th>
+                  <td class="b">1234567890</td>
+              </tr>
+          </tbody>
+    </table>
+    </div>
+      </div>
+    </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card" id="card1">
+        <img src="{{url_for('static', filename='train.jpg')}}" class="card-img-top" id="img" alt="image2">
+        <div class="card-body" >
+          <h5 class="card-title">Train </h5>
+          <h1 style="text-align:center;margin-top:20px;margin-bottom: 20px;">10</h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card" id="card1">
+        <img src="{{url_for('static', filename='station.jpg')}}" class="card-img-top" id="img" alt="image1">
+        <div class="card-body">
+          <h5 class="card-title">Station </h5>
+          <h1 style="text-align:center;margin-top:20px;margin-bottom: 20px;">10</h1>
+        </div>
+      </div>
+    </div>
+    
+   
+   
+   
+  </div>
+</div>
+<br><br>
+
+
+  {% endblock %}
+</div>
