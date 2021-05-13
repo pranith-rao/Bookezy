@@ -51,33 +51,33 @@
 				<div class="card-header">Station Registration Form</div>
 				<div class="card-body">
 					<div class="container">
-						<form>
+						<form method="POST" action="/reg_station">
 							<div class="mb-3" style="margin-top: 10px">
 								<label class="form-label">Station Name </label>
 								<input type="text" class="form-control" name="station_name" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Station location</label>
-								<input type="text" class="form-control" required />
+								<input type="text" class="form-control" name="station_location" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Station Pincode</label>
-								<input type="text" class="form-control" required />
+								<input type="text" class="form-control" name="station_code" required />
 							</div>
 							<br />
 							<h4><span> Admin Details</span></h4>
 							<br />
 							<div class="mb-3" style="margin-top: 10px">
 								<label class="form-label"> Name </label>
-								<input type="text" class="form-control" name="station_name" required />
+								<input type="text" class="form-control" name="admin_name" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Email</label>
-								<input type="email" class="form-control" required />
+								<input type="email" class="form-control" name="email" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Phone</label>
-								<input type="tel" class="form-control" minlength="10" maxlength="10" required />
+								<input type="tel" class="form-control" name="phno" minlength="10" maxlength="10" required />
 							</div>
 							<div class="row justify-content-center">
 								<button type="submit" id="button1" class="btn btn-primarys">Submit</button>

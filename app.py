@@ -1,14 +1,28 @@
-from flask import Flask,redirect,render_template,url_for
+from flask import *
+from flask.wrappers import Request
 from flask_sqlalchemy import SQLAlchemy
+import os
+from passlib.hash import sha256_crypt
+from flask_mail import Mail,Message
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.urandom(16)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///rail_db.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = "emailspambot69@gmail.com"
+app.config['MAIL_PASSWORD'] = "thenightwemet1"
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+
+
 db = SQLAlchemy(app)
+mail = Mail(app)
 
-
-class users(db.Model):
+class Users(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String(50),nullable=False,unique=True)
     email = db.Column(db.String(100),nullable=False,unique=True)
@@ -21,7 +35,7 @@ class users(db.Model):
     def __repr__(self):
         return '<User %r>' % self.name
 
-class station(db.Model):
+class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     station_name = db.Column(db.String(100),nullable=False,unique=True)
     station_location = db.Column(db.String(100),nullable=False)
@@ -32,19 +46,19 @@ class station(db.Model):
     password = db.Column(db.String(255),nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<Station {}>' % self.name
 
 
-class admin(db.Model):
+class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100),nullable=False)
     email = db.Column(db.String(100), nullable=False,unique=True)
     password = db.Column(db.String(255),nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<Admin %r>' % self.name
 
-class train(db.Model):
+class Train(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     train_name = db.Column(db.String(100),nullable=False,unique=True)
     seats = db.Column(db.Integer,nullable=False)
@@ -55,7 +69,7 @@ class train(db.Model):
     to_location = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.train_name
+        return '<Train %r>' % self.train_name
 
 
 
@@ -169,6 +183,60 @@ def station_forpass_form():
 @app.route("/user_forpass_form")
 def user_forpass_form():
     return render_template('user_forpass_form.html')
+
+@app.route("/mainadmin_log",methods=['POST'])
+def mainadmin_log():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        if email == 'mainadmin@gmail.com' and password == '1234567890':
+            flash('Login Successfull','success')
+            return redirect(url_for('admdash'))
+        else:
+            flash('Invalid Credentials','error')
+            return redirect(url_for('adminlog'))
+
+@app.route("/reg_station",methods=['POST'])
+def reg_station():
+    if request.method == 'POST':
+        name_station = request.form['station_name']
+        station_location = request.form['station_location']
+        station_code = request.form['station_code']
+        admin_name = request.form['admin_name']
+        email = request.form['email']
+        phno = request.form['phno']
+        station_check = Station.query.filter_by(station_name = name_station).first()
+        if not station_check:
+            email_check = Station.query.filter_by(email = email).first()
+            if not email_check:
+                phno_check = Station.query.filter_by(phone = phno).first()
+                if not phno_check:
+                    hash_pass = sha256_crypt.hash(phno)
+                    station = Station(station_name = name_station, station_location = station_location, station_pincode = station_code, name = admin_name, email = email, phone = phno, password = hash_pass)
+                    db.session.add(station)
+                    db.session.commit()
+                    msg = Message("Registration Confirmation",sender="emailspambot69@gmail.com",recipients=[email])
+                    message = "Your station was registered successfully"
+                    msg.body = message
+                    mail.send(msg)
+                    flash('Station registered successfully','success')
+                    return redirect(url_for('admdash'))
+                else:
+                    flash('Admin phone number already used','error')
+                    return redirect(url_for('stationreg'))
+            else:
+                flash('Admin Mail ID already used','error')
+                return redirect(url_for('stationreg'))
+        else:
+            flash('Station name already registered','error')
+            return redirect(url_for('stationreg'))
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash('Logged out successfully',"success")
+    return redirect(url_for("home"))
+
 
 
 
