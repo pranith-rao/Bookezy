@@ -54,16 +54,18 @@
 			</tr>
 		</thead>
 		<tbody>
+			{% for i in data %}
 			<tr>
-				<td>Mark</td>
-				<td>Otto</td>
-				<td>@mdo</td>
-				<td>Mark</td>
-				<td>Otto</td>
-				<td>@mdo</td>
-				<td>@mdo</td>
-				<td>@mdo</td>
-			</tr>
+				<td>{{i.id}}</td>
+				<td>{{i.train_name}}</td>
+				<td>{{i.seats}}</td>
+				<td>{{i.from_location}}</td>
+				<td>{{i.through_route}}</td>
+				<td>{{i.to_location}}</td>
+				<td>{{i.arrival_time}}</td>
+				<td>{{i.departure_time}}</td>
+			</tr>	
+			{% endfor %}
 		</tbody>
 	</table>
 </div>

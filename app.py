@@ -105,7 +105,11 @@ def trainreg():
 
 @app.route("/trainlist")
 def trainlist():
-    return render_template('train_list.html')
+    if 'admin' in session:
+        data = Train.query.all()
+        return render_template('train_list.html',data=data)
+    else:
+        return redirect(url_for('stationlog'))
 
 @app.route("/booklist")
 def booklist():
@@ -392,6 +396,37 @@ def change_station_pass():
             else:
                 flash("Passwords dont match",'error')
                 return redirect(url_for('changepass_station'))
+        else:
+            flash("Session Expired","error")
+            return redirect(url_for('stationlog'))
+
+@app.route('/train_submit',methods=['POST'])
+def train_submit():
+    if request.method == 'POST':
+        if 'admin' in session:
+            train_id = request.form['train_id']
+            train_name = request.form['train_name']
+            seats = request.form['seats']
+            a_time = request.form['a_time']
+            d_time = request.form['d_time']
+            from_loc = request.form['from_loc']
+            through = request.form['through']
+            to_loc = request.form['to_loc']
+            id_check = Train.query.filter_by(id=train_id).first()
+            if not id_check:
+                name_check = Train.query.filter_by(train_name=train_name).first()
+                if not name_check:
+                    train = Train(id=train_id,train_name=train_name,seats=seats,arrival_time=a_time,departure_time=d_time,from_location=from_loc,through_route=through,to_location=to_loc)
+                    db.session.add(train)
+                    db.session.commit()
+                    flash("Train added successfully","success")
+                    return redirect(url_for('stationdash'))
+                else:
+                    flash("Train name already used","error")
+                    return redirect(url_for('trainreg'))
+            else:
+                flash("Train ID already used","error")
+                return redirect(url_for('trainreg'))
         else:
             flash("Session Expired","error")
             return redirect(url_for('stationlog'))

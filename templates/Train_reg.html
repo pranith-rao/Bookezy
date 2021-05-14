@@ -50,44 +50,44 @@
 				<div class="card-header">Train Registration Form</div>
 				<div class="card-body">
 					<div class="container">
-						<form>
+						<form action="/train_submit" method="POST">
 							<div class="mb-3" style="margin-top: 10px">
 								<label class="form-label">Train ID</label>
-								<input type="text" class="form-control" required />
+								<input type="text" name="train_id" class="form-control" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Train Name </label>
-								<input type="text" class="form-control" name="station_name" required />
+								<input type="text" class="form-control" name="train_name" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">No. of Seats</label>
-								<input type="number" class="form-control" required />
+								<input type="number" class="form-control" name="seats" required />
 							</div>
 							<br />
 							<h4><span> Extra Details</span></h4>
 							<br />
 							<div class="mb-3">
 								<label class="form-label"> Arrival Time </label>
-								<input type="text" class="form-control" name="station_name" required />
+								<input type="text" class="form-control" name="a_time" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label"> Departure Time </label>
-								<input type="text" class="form-control" name="station_name" required />
+								<input type="text" class="form-control" name="d_time" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">From Loaction</label>
-								<input type="text" class="form-control" required />
+								<input type="text" class="form-control" name="from_loc" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Through Route</label>
-								<input type="text" class="form-control" required />
+								<input type="text" class="form-control" name="through" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label"> To Loaction</label>
-								<input type="text" class="form-control" name="station_name" required />
+								<input type="text" class="form-control" name="to_loc" required />
 							</div>
 							<div class="row justify-content-center">
-								<button type="submit" id="button1" class="btn btn-primarys">Submit</button>
+								<button type="submit" id="button1"  class="btn btn-primarys">Submit</button>
 							</div>
 						</form>
 					</div>
