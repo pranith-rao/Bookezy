@@ -39,6 +39,7 @@
 {% endblock %}
 <!--content part-->
 {% block content %}
+{% if data %}
 <div class="table-responsive">
 	<table class="table">
 		<thead>
@@ -46,20 +47,40 @@
 				<th scope="col">Name</th>
 				<th scope="col">Email</th>
 				<th scope="col">Seats</th>
-				<th scope="col">Date</th>
-
-				<th scope="col">To</th>
+				<th scope="col">Train ID</th>
+				<th scope="col">Location</th>
+				<th scope="col">No of childrens</th>
+				<th scope="col">No of senior citizens</th>
+				<th scope="col">Accept</th>
+				<th scope="col">Reject</th>
 			</tr>
 		</thead>
 		<tbody>
+
+		{% for i in data %}
 			<tr>
-				<td>Mark</td>
-				<td>Otto</td>
-				<td>@mdo</td>
-				<td>@mdo</td>
-				<td>Otto</td>
+				<td>{{i.name}}</td>
+				<td>{{i.email}}</td>
+				<td>{{i.seat_no}}</td>
+				<td>{{i.train_id}}</td>
+				<td>{{i.location}}</td>
+				<td>{{i.child}}</td>
+				<td>{{i.old}}</td>
+				<td><a href="reserve_success/{{i.id}}"> <button class="btn btn-success" type="submit">
+            <i class="fa fa-check" aria-hidden="true"></i>
+          </button></a></td>
+				<td><a href="/reserve_error/{{i.id}}"><button class="btn btn-danger" type="submit">
+            <i class="fa fa-times" aria-hidden="true"></i>
+				</button></a></td>
 			</tr>
+		{% endfor %}
+
+
 		</tbody>
 	</table>
+
 </div>
+{% else %}
+			<p style="color:red;text-align:center;font-size:30px;">No Reservations Yet</p>
+		{% endif %}
 {% endblock %}

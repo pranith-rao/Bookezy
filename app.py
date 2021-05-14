@@ -5,6 +5,7 @@ import os,random,re
 from passlib.hash import sha256_crypt
 from flask_mail import Mail,Message
 import random
+import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(16)
@@ -89,6 +90,7 @@ class Book(db.Model):
     date = db.Column(db.String(50), nullable=False)
     child = db.Column(db.Integer, nullable=False)
     old = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Boolean,nullable=False)
 
 
     def __repr__(self):
@@ -148,7 +150,11 @@ def trainlist():
 
 @app.route("/booklist")
 def booklist():
-    return render_template('Booked_list.html')
+    if 'admin' in session:
+        reservations = Book.query.filter_by(status=0).all()
+        return render_template('Booked_list.html',data=reservations)
+    else:
+        return redirect(url_for("stationlog"))
 
 
 @app.route("/changepass_station")
@@ -161,25 +167,41 @@ def userreg():
 
 @app.route("/userdash")
 def userdash():
-    trains = Train.query.count()
-    station = Station.query.count()
-    return render_template('user_dash.html',data=[trains,station])
+    if 'user' in session:
+        trains = Train.query.count()
+        station = Station.query.count()
+        return render_template('user_dash.html',data=[trains,station])
+    else:
+        flash("please log in", "error")
+        return redirect(url_for("userlog"))
 
 @app.route("/available_train")
 def available_train():
-    avail = Train.query.all()
-    return render_template('availtrain_list.html',data=avail)
+    if 'user' in session:
+        avail = Train.query.all()
+        return render_template('availtrain_list.html',data=avail)
+    else:
+        flash("please log in", "error")
+        return redirect(url_for("userlog"))
 
 @app.route("/Book_train")
 def Book_train():
-    station_locations = Train.query.all()
-    trains_avialable = Seats.query.all()
-    return render_template('Book_train.html',location=station_locations,train=trains_avialable)
+    if 'user' in session:
+        station_locations = Train.query.all()
+        trains_avialable = Seats.query.all()
+        return render_template('Book_train.html',location=station_locations,train=trains_avialable)
+    else:
+        flash("please log in", "error")
+        return redirect(url_for("userlog"))
 
 @app.route("/History")
 def History():
-    history = Book.query.filter_by(email="harshithkumar40@gmail.com").all()
-    return render_template('user_history.html',data=history)
+    if 'user' in session:
+        history = Book.query.filter_by(email=session['user_email']).all()
+        return render_template('user_history.html',data=history)
+    else:
+        flash("please log in", "error")
+        return redirect(url_for("userlog"))
 
 @app.route("/")
 def home():
@@ -235,7 +257,13 @@ def user_forpass_form():
 
 @app.route("/user_reserve")
 def user_reserve():
-    return render_template('user_reserve.html')
+    if 'user' in session:
+        station_locations = Train.query.all()
+        trains_avialable = Seats.query.all()
+        return render_template('user_reserve.html',location=station_locations,train=trains_avialable)
+    else:
+        flash("please log in", "error")
+        return redirect(url_for("userlog"))
 
 @app.route("/mainadmin_log",methods=['POST'])
 def mainadmin_log():
@@ -501,7 +529,7 @@ def book_ticket():
                 updated_seats = seats.seats_count - int(tot_seats)
                 seats.seats_count = int(updated_seats)
                 db.session.commit()
-                users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=random.randint(999,999999),train_id=int(train_id),date=date,child=int(child),old=int(senior))
+                users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=random.randint(999,999999),train_id=int(train_id),date=date,child=int(child),old=int(senior),status=1)
                 db.session.add(users)
                 db.session.commit()
                 flash("Ticket Successfully Booked","success")
@@ -513,6 +541,7 @@ def book_ticket():
 
 @app.route("/reset")
 def reset():
+
     seats = Seats.query.all()
     return render_template("reset.html",train=seats)
 
@@ -595,11 +624,111 @@ def user_login():
                 session['user'] = True
                 session['user_name'] = response.name
                 session['user_email'] = response.email
+                session['user_phone'] = response.phone
                 flash('You were successfully logged in',"success")
                 return redirect(url_for("userdash"))
             else:
                 flash('Invalid Credentials',"error")
                 return redirect(url_for("userlog"))
+
+@app.route("/enquiry",methods=['POST'])
+def enquiry():
+    if 'user' in session:
+        if request.method == 'POST':
+            enquiry = request.form['enquiry']
+            check_ticket_valid = Book.query.filter_by(ticket_no=enquiry).first()
+            if not check_ticket_valid:
+                flash("Invalid Ticket number","error")
+                return redirect(url_for("userdash"))
+            elif check_ticket_valid.status == 0:
+                flash("Reservation is in process", "error")
+                return redirect(url_for("userdash"))
+            else:
+                flash("Booking is Done","success")
+                return redirect(url_for("userdash"))
+        else:
+            flash("some error occurred","error")
+            return redirect(url_for("/"))
+
+    else:
+        flash("please log in","error")
+        return redirect(url_for("userlog"))
+
+@app.route("/reserve_ticket",methods=['POST'])
+def reserve_ticket():
+    if 'user' in session:
+        if request.method == 'POST':
+            name = request.form['name']
+            email = request.form['email']
+            location = request.form['location']
+            tot_seats = request.form['seat']
+            date = request.form['travel']
+            child = request.form['child']
+            senior = request.form['senior']
+            train_id = request.form['train']
+            if name and email:
+                users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=random.randint(999,999999),train_id=int(train_id),date=date,child=int(child),old=int(senior),status=0)
+                db.session.add(users)
+                db.session.commit()
+                flash("Request sent for reservation","success")
+                return redirect(url_for("userdash"))
+            else:
+                flash("Name and Email Required","error")
+                return redirect(url_for("Book_train"))
+        else:
+            flash("some error occurred","error")
+            return redirect(url_for("/"))
+    else:
+        flash("please log in","error")
+        return redirect(url_for("userlog"))
+
+@app.route("/reserve_success/<int:id>")
+def reserve_success(id):
+    if 'admin' in session:
+        update_status = Book.query.filter_by(id=id).first()
+        train_id = update_status.train_id
+        tot_seats = update_status.seat_no
+        seats = Seats.query.filter_by(train_id=train_id).first()
+        if seats.seats_count == 0:
+            flash("No Seats available", "error")
+            return redirect(url_for("booklist"))
+        elif int(tot_seats) > seats.seats_count:
+            flash(f"Only {seats.seats_count} Seats Available", "error")
+            return redirect(url_for("booklist"))
+        else:
+            updated_seats = seats.seats_count - int(tot_seats)
+            seats.seats_count = int(updated_seats)
+            db.session.commit()
+            update_status.status = 1
+            db.session.commit()
+            flash("Ticket Booked", "success")
+            return redirect(url_for("booklist"))
+    else:
+        flash("unauthorized access","error")
+        return redirect(url_for("stationlog"))
+
+@app.route("/reserve_error/<int:id>")
+def reserve_error(id):
+    if 'admin' in session:
+        del_ticket = Book.query.filter_by(id=id).first()
+        db.session.delete(del_ticket)
+        db.session.commit()
+        flash("Reservation Cancelled","error")
+        return redirect(url_for("booklist"))
+    else:
+        flash("unauthorized access", "error")
+        return redirect(url_for("stationlog"))
+
+@app.route("/cancel/<int:id>")
+def cancel(id):
+    check_date = Book.query.filter_by(id=id).first()
+    user_date = check_date.date
+
+    current = datetime.date.today()
+
+    final_date = datetime_str-current
+    print(final_date)
+
 
 
 if __name__ == '__main__':

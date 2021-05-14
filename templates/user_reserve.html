@@ -50,7 +50,7 @@
         <div class="card-header">Reserve Seats</div>
         <div class="card-body">
           <div class="container">
-            <form action="/book_ticket" method="post">
+            <form action="/reserve_ticket" method="post">
               <div class="mb-3" style="margin-top: 10px">
                 <label class="form-label">Name</label>
                 <input
@@ -79,7 +79,7 @@
                   name="train"
                   required
                 >
-                  {% if train %} < {% for i in train %}
+                  {% if train %} {% for i in train %}
                   <option>{{i.train_id}}</option>
                   {% endfor %} {% else %}
                   <option>Currently not accepting</option>
@@ -94,7 +94,7 @@
                   name="location"
                   required
                 >
-                  {% if location %} < {% for i in location %}
+                  {% if location %} {% for i in location %}
                   <option>{{i.to_location}}</option>
                   {% endfor %} {% else %}
                   <option>Currently not accepting</option>
@@ -150,7 +150,7 @@
               <div class="row justify-content-center">
                 {% if train and location %}
                 <button type="submit" id="button1" class="btn btn-primary">
-                  Book
+                  Reserve
                 </button>
                 {% else %}
                 <button

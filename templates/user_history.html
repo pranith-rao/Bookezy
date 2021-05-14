@@ -39,6 +39,7 @@
 {% endblock %}
 <!--content part-->
 {% block content %}
+{% if data %}
 <div class="table-responsive">
   <table class="table">
     <thead>
@@ -60,14 +61,18 @@
         <td>{{i.date}}</td>
         <td>{{i.seat_no}}</td>
         <td>
-          <button class="btn btn-danger" type="submit">
+          <a href="/cancel/{{i.id}}"><button class="btn btn-danger" type="submit">
             <i class="fa fa-times" aria-hidden="true"></i>
-          </button>
+          </button></a>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
 </div>
+{% else %}
+			<p style="color:red;text-align:center;font-size:30px;">No Tickets Yet</p>
+		{% endif %}
 
 {% endblock %}
