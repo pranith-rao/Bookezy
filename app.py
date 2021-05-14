@@ -233,6 +233,10 @@ def station_forpass_form():
 def user_forpass_form():
     return render_template('user_forpass_form.html')
 
+@app.route("/user_reserve")
+def user_reserve():
+    return render_template('user_reserve.html')
+
 @app.route("/mainadmin_log",methods=['POST'])
 def mainadmin_log():
     if request.method == 'POST':

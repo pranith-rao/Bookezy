@@ -1,150 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		{% block head %}
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-			integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0"
-			crossorigin="anonymous"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-		/>
-		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-		<title>{% block title %}{% endblock %} - Train</title>
-		{% endblock %}
-		<style>
-			.navbar-brand {
-				font-family: Bahnschrift SemiBold;
-				font-size: 23px;
-			}
-			#nav {
-				font-family: Bahnschrift SemiBold;
-				font-size: 18px;
-			}
-			#navbarDropdown {
-				font-family: Bahnschrift SemiBold;
-				font-size: 18px;
-			}
-			ul li a {
-				text-decoration: none;
-				font-weight: 450;
-				letter-spacing: 1px;
-				padding: 2px 15px;
-				transition: 0.3s;
-				font-size: 17px;
-				margin-right: 20px;
-			}
-			.dropdown-menu {
-				width: 150px;
-			}
-			.card-header {
-				background-color: #1976d2;
-				text-align: center;
-				font-weight: 500;
-				color: white;
-				font-size: 22px;
-				letter-spacing: 0.3px;
-			}
+  <head>
+    {% block head %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <title>{% block title %}{% endblock %} - Train</title>
+    {% endblock %}
+    <style>
+      .navbar-brand {
+        font-family: Bahnschrift SemiBold;
+        font-size: 23px;
+      }
+      #nav {
+        font-family: Bahnschrift SemiBold;
+        font-size: 18px;
+      }
+      #navbarDropdown {
+        font-family: Bahnschrift SemiBold;
+        font-size: 18px;
+      }
+      ul li a {
+        text-decoration: none;
+        font-weight: 450;
+        letter-spacing: 1px;
+        padding: 2px 15px;
+        transition: 0.3s;
+        font-size: 17px;
+        margin-right: 20px;
+      }
+      .dropdown-menu {
+        width: 150px;
+      }
+      .card-header {
+        background-color: #1976d2;
+        text-align: center;
+        font-weight: 500;
+        color: white;
+        font-size: 22px;
+        letter-spacing: 0.3px;
+      }
 
-			.card {
-				border: solid 1px white;
-				box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
-			}
-		</style>
-	</head>
-	<body>
-		{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for cat,msg in messages %}
-		{% if cat == "error" %}
-		<script class="text-uppercase">
-			swal({
-				title: 'Error!',
-				text: '{{msg|upper}}',
-				icon: 'error',
-				button: 'OK'
-			});
-		</script>
-		{% else %}
-		<script>
-			swal({
-				title: 'Success!',
-				text: '{{msg|upper}}',
-				icon: 'success',
-				button: 'OK',
-				timer: 1500
-			});
-		</script>
-		{% endif %} {% endfor %} {% endif %} {% endwith %}
-		<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #3949ab">
-			<div class="container-fluid">
-				<a class="navbar-brand" href="#"> <i class="fa fa-cog"></i>&nbsp;&nbsp;Admin Dashboard</a>
-				<button
-					class="navbar-toggler"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarSupportedContent"
-					aria-controls="navbarSupportedContent"
-					aria-expanded="false"
-					aria-label="Toggle navigation"
-				>
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/admdash" id="nav"
-								><i class="fa fa-home" aria-hidden="true"></i>&nbsp;Home</a
-							>
-						</li>
-						<li class="nav-item dropdown">
-							<a
-								class="nav-link dropdown-toggle active"
-								href="#"
-								id="navbarDropdown"
-								role="button"
-								data-bs-toggle="dropdown"
-								aria-expanded="false"
-							>
-								<i class="fa fa-train"></i>&nbsp;Station
-							</a>
-							<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-								<li style="margin-top: 5px">
-									<a class="dropdown-item" href="/stationreg"
-										><i class="fa fa-th"></i>&nbsp;&nbsp;Form</a
-									>
-								</li>
-								<li><hr class="dropdown-divider" /></li>
-								<li>
-									<a class="dropdown-item" href="/stationlist"
-										><i class="fa fa-list"></i>&nbsp;&nbsp;List</a
-									>
-								</li>
-								<li>
-									<a class="dropdown-item" href="/reset"
-										><i class="fa fa-list"></i>&nbsp;&nbsp;Reset Seats</a
-									>
-								</li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" aria-current="page" href="/logout" id="nav"
-								><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;Logout</a
-							>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-		<div id="content">{% block content %} {% endblock %}</div>
-		<div id="footer">{% block footer %} {% endblock %}</div>
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
-			integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
-			crossorigin="anonymous"
-		></script>
-	</body>
+      .card {
+        border: solid 1px white;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for cat,msg in messages %} {% if cat == "error" %}
+    <script class="text-uppercase">
+      swal({
+        title: "Error!",
+        text: "{{msg|upper}}",
+        icon: "error",
+        button: "OK"
+      });
+    </script>
+    {% else %}
+    <script>
+      swal({
+        title: "Success!",
+        text: "{{msg|upper}}",
+        icon: "success",
+        button: "OK",
+        timer: 1500
+      });
+    </script>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
+    <nav
+      class="navbar navbar-expand-lg navbar-dark"
+      style="background-color: #1a237e"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <i class="fa fa-cog"></i>&nbsp;&nbsp;Admin Dashboard</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="/admdash"
+                id="nav"
+                ><i class="fa fa-home" aria-hidden="true"></i>&nbsp;Home</a
+              >
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle active"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa fa-train"></i>&nbsp;Station
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li style="margin-top: 5px">
+                  <a class="dropdown-item" href="/stationreg"
+                    ><i class="fa fa-th"></i>&nbsp;&nbsp;Form</a
+                  >
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="/stationlist"
+                    ><i class="fa fa-list"></i>&nbsp;&nbsp;List</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/reset"
+                    ><i class="fa fa-list"></i>&nbsp;&nbsp;Reset Seats</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="/logout"
+                id="nav"
+                ><i class="fa fa-sign-out" aria-hidden="true"></i
+                >&nbsp;Logout</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div id="content">{% block content %} {% endblock %}</div>
+    <div id="footer">{% block footer %} {% endblock %}</div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
