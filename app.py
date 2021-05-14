@@ -522,5 +522,81 @@ def reset_seats():
         flash("Reset Successfull","success")
         return redirect(url_for("admdash"))
 
+@app.route("/user_register",methods=["POST"])
+def user_register():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        address = request.form['address']
+        password = request.form['password']
+        email_check = Users.query.filter_by(email=email).first()
+        if not email_check:
+            phone_check = Users.query.filter_by(phone=phone).first()
+            if not phone_check:
+                flag = 0
+                while True:  
+                    if (len(password)<8):
+                        flag = -1
+                        break
+                    elif not re.search("[a-z]", password):
+                        flag = -1
+                        break
+                    elif not re.search("[A-Z]", password):
+                        flag = -1
+                        break
+                    elif not re.search("[0-9]", password):
+                        flag = -1
+                        break
+                    elif not re.search("[_@$]", password):
+                        flag = -1
+                        break
+                    elif re.search("\\s", password):
+                        flag = -1
+                        break
+                    else:
+                        flag = 0
+                        break
+                if flag ==-1:
+                    flash("Not a Valid Password","error")
+                    return redirect(url_for("userreg"))
+                hash_pass = sha256_crypt.hash(password)
+                user = Users(name=name,email=email,phone=phone,address=address,password=hash_pass)
+                db.session.add(user)
+                db.session.commit()
+                msg = Message("Registration Confirmation",sender="bookezy13@gmail.com",recipients=[email])
+                msg.body = "Thank you for registering on our website.Hope you have a good experience"
+                mail.send(msg)
+                flash('Registeration successfully','success')
+                return redirect(url_for('userlog'))
+            else:
+                flash("Phone Number already registered","error")
+                return redirect(url_for('userreg'))
+        else:
+            flash("Email ID already registered","error")
+            return redirect(url_for('userreg'))
+
+@app.route("/user_login",methods=['POST'])
+def user_login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        response = Users.query.filter_by(email=email).first()
+        if not response:
+            flash("Email ID not registered",'error')
+            return redirect(url_for("userlog"))
+        else:
+            checkpass = sha256_crypt.verify(password,response.password)
+            if email == response.email and checkpass == True:
+                session['user'] = True
+                session['user_name'] = response.name
+                session['user_email'] = response.email
+                flash('You were successfully logged in',"success")
+                return redirect(url_for("userdash"))
+            else:
+                flash('Invalid Credentials',"error")
+                return redirect(url_for("userlog"))
+
+
 if __name__ == '__main__':
     app.run(debug=True,port=9876)
