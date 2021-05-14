@@ -14,6 +14,7 @@
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
 		/>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 		<title>{% block title %}{% endblock %} - Train</title>
 		{% endblock %}
 		<style>
@@ -56,6 +57,27 @@
 		</style>
 	</head>
 	<body>
+	{% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for cat,msg in messages %}
+		{% if cat == "error" %}
+		<script class="text-uppercase">
+			swal({
+				title: 'Error!',
+				text: '{{msg|upper}}',
+				icon: 'error',
+				button: 'OK'
+			});
+		</script>
+		{% else %}
+		<script>
+			swal({
+				title: 'Success!',
+				text: '{{msg|upper}}',
+				icon: 'success',
+				button: 'OK',
+				timer: 1500
+			});
+		</script>
+		{% endif %} {% endfor %} {% endif %} {% endwith %}
 		<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #3949ab">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="#"><i class="fa fa-user"></i>&nbsp;&nbsp;User Dashboard</a>

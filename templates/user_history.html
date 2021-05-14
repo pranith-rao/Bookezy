@@ -44,18 +44,24 @@
 		<thead>
 			<tr>
 				<th scope="col">Train ID</th>
-				<th scope="col">Train Name</th>
+				<th scope="col">Ticket No</th>
 				<th scope="col">To</th>
 				<th scope="col">Date</th>
+				<th scope="col">Total Seats Booked</th>
+				<th scope="col">Cancelation</th>
 			</tr>
 		</thead>
 		<tbody>
+		{% for i in data %}
 			<tr>
-				<td>Mark</td>
-				<td>Otto</td>
-				<td>@mdo</td>
-				<td>Mark</td>
+				<td>{{i.train_id}}</td>
+				<td>{{i.ticket_no}}</td>
+				<td>{{i.location}}</td>
+				<td>{{i.date}}</td>
+				<td>{{i.seat_no}}</td>
+				<td><button class="btn btn-danger" type="submit">Cancel</button></td>
 			</tr>
+		{% endfor %}
 		</tbody>
 	</table>
 </div>

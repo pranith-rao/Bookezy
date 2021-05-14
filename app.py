@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os,random,re
 from passlib.hash import sha256_crypt
 from flask_mail import Mail,Message
-
+import random
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(16)
@@ -46,7 +46,7 @@ class Station(db.Model):
     password = db.Column(db.String(255),nullable=False)
 
     def __repr__(self):
-        return '<Station {}>' % self.name
+        return '<Station %r>' % self.name
 
 
 class Admin(db.Model):
@@ -71,16 +71,44 @@ class Train(db.Model):
     def __repr__(self):
         return '<Train %r>' % self.train_name
 
+class Seats(db.Model):
+    train_id = db.Column(db.Integer,primary_key=True)
+    seats_count = db.Column(db.Integer,nullable=False)
 
+    def __repr__(self):
+        return '<Seats %r>' % self.train_id
+
+class Book(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    ticket_no = db.Column(db.String(100),nullable=False)
+    name = db.Column(db.String(100),nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    location = db.Column(db.String(100), nullable=False)
+    seat_no = db.Column(db.String(100), nullable=False)
+    train_id = db.Column(db.Integer,nullable=False)
+    date = db.Column(db.String(50), nullable=False)
+    child = db.Column(db.Integer, nullable=False)
+    old = db.Column(db.Integer, nullable=False)
+
+
+    def __repr__(self):
+        return '<Book %r>' % self.id
 
 #db.create_all()
+#db.drop_all()
 @app.route("/admreg")
 def admreg():
     return render_template('adminreg.html')
 
 @app.route("/admdash")
 def admdash():
-    return render_template('Admin_dash.html')
+    if 'mainadmin' in session:
+        trains = Train.query.count()
+        stations = Station.query.count()
+        admins = Station.query.count()
+        return render_template('Admin_dash.html',data=[trains,stations,admins])
+    else:
+        return redirect(url_for('adminlog'))
 
 @app.route("/stationreg")
 def stationreg():
@@ -88,7 +116,13 @@ def stationreg():
 
 @app.route("/stationdash")
 def stationdash():
-    return render_template('station_dash.html')
+    if 'admin' in session:
+        trains = Train.query.count()
+        stations = Station.query.count()
+        users = Users.query.count()
+        return render_template('station_dash.html',data=[trains,stations,users])
+    else:
+        return redirect(url_for("stationlog"))
 
 @app.route("/stationlist")
 def stationlist():
@@ -111,6 +145,7 @@ def trainlist():
     else:
         return redirect(url_for('stationlog'))
 
+
 @app.route("/booklist")
 def booklist():
     return render_template('Booked_list.html')
@@ -126,19 +161,25 @@ def userreg():
 
 @app.route("/userdash")
 def userdash():
-    return render_template('user_dash.html')
+    trains = Train.query.count()
+    station = Station.query.count()
+    return render_template('user_dash.html',data=[trains,station])
 
 @app.route("/available_train")
 def available_train():
-    return render_template('availtrain_list.html')
+    avail = Train.query.all()
+    return render_template('availtrain_list.html',data=avail)
 
 @app.route("/Book_train")
 def Book_train():
-    return render_template('Book_train.html')
+    station_locations = Train.query.all()
+    trains_avialable = Seats.query.all()
+    return render_template('Book_train.html',location=station_locations,train=trains_avialable)
 
 @app.route("/History")
 def History():
-    return render_template('user_history.html')
+    history = Book.query.filter_by(email="harshithkumar40@gmail.com").all()
+    return render_template('user_history.html',data=history)
 
 @app.route("/")
 def home():
@@ -417,7 +458,9 @@ def train_submit():
                 name_check = Train.query.filter_by(train_name=train_name).first()
                 if not name_check:
                     train = Train(id=train_id,train_name=train_name,seats=seats,arrival_time=a_time,departure_time=d_time,from_location=from_loc,through_route=through,to_location=to_loc)
+                    seats = Seats(train_id=train_id,seats_count=seats)
                     db.session.add(train)
+                    db.session.add(seats)
                     db.session.commit()
                     flash("Train added successfully","success")
                     return redirect(url_for('stationdash'))
@@ -430,6 +473,54 @@ def train_submit():
         else:
             flash("Session Expired","error")
             return redirect(url_for('stationlog'))
+
+@app.route("/book_ticket",methods=['POST'])
+def book_ticket():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        location = request.form['location']
+        tot_seats = request.form['seat']
+        date = request.form['travel']
+        child = request.form['child']
+        senior = request.form['senior']
+        train_id = request.form['train']
+        if name and email:
+            seats = Seats.query.filter_by(train_id=train_id).first()
+            if seats.seats_count == 0:
+                flash("No Seats available", "error")
+                return redirect(url_for("Book_train"))
+            elif int(tot_seats) > seats.seats_count:
+                flash(f"Only {seats.seats_count} Seats Available","error")
+                return redirect(url_for("Book_train"))
+            else:
+                updated_seats = seats.seats_count - int(tot_seats)
+                seats.seats_count = int(updated_seats)
+                db.session.commit()
+                users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=random.randint(999,999999),train_id=int(train_id),date=date,child=int(child),old=int(senior))
+                db.session.add(users)
+                db.session.commit()
+                flash("Ticket Successfully Booked","success")
+                return redirect(url_for("userdash"))
+        else:
+            flash("Name and Email Required","error")
+            return redirect(url_for("Book_train"))
+
+
+@app.route("/reset")
+def reset():
+    seats = Seats.query.all()
+    return render_template("reset.html",train=seats)
+
+@app.route("/reset_seats",methods=['POST'])
+def reset_seats():
+    if request.method == 'POST':
+        train_id = request.form['train']
+        reset = Seats.query.filter_by(train_id=train_id).first()
+        reset.seats_count = 20
+        db.session.commit()
+        flash("Reset Successfull","success")
+        return redirect(url_for("admdash"))
 
 if __name__ == '__main__':
     app.run(debug=True,port=9876)
