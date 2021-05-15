@@ -802,11 +802,11 @@ def reserve_error(id):
 def cancel(id):
     check_date = Book.query.filter_by(id=id).first()
     user_date = check_date.date
+    da = datetime.datetime.strptime(user_date,'%Y-%m-%d')
 
-    current = datetime.date.today()
+    current = datetime.datetime.now()
+    tot = da-current
 
-    final_date = datetime_str-current
-    print(final_date)
 
 
 #user forgot password
