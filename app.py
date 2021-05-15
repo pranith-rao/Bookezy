@@ -260,6 +260,22 @@ def station_forpass_form():
 def user_forpass_form():
     return render_template('user_forpass_form.html')
 
+@app.route("/add_seat")
+def add_seat():
+    return render_template('station_addseat.html')
+
+@app.route("/station_profile")
+def station_profile():
+    return render_template('station_profile.html')
+
+@app.route("/station_profile_update")
+def station_profile_update():
+    return render_template('station_updateform.html')
+
+@app.route("/user_profile_update")
+def user_profile_update():
+    return render_template('user_profupdate.html')
+
 @app.route("/user_reserve")
 def user_reserve():
     if 'user' in session:

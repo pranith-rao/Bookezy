@@ -1,6 +1,6 @@
 {% extends "station_layout.html" %}
 <!--title part-->
-{% block title %}Reset Seats{% endblock %}
+{% block title %}Update Profile{% endblock %}
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
@@ -43,44 +43,48 @@
 {% endblock %}
 <!--content part-->
 {% block content %}
+
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-sm-6">
       <div class="card">
-        <div class="card-header">Reset Seats</div>
+        <div class="card-header">Update Profile</div>
         <div class="card-body">
           <div class="container">
-            <form action="/reset_seats" method="post">
-              <div class="mb-3">
-                <label class="form-label">Train ID </label>
-                <select
-                  class="form-select"
-                  aria-label="Default select example"
-                  name="train"
+            <form method="POST" action="/reg_station">
+              <div class="mb-3" style="margin-top: 10px">
+                <label class="form-label"> Name </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="admin_name"
                   required
-                >
-                  {% if train %} {% for i in train %}
-                  <option>{{i.train_id}}</option>
-                  {% endfor %} {% else %}
-                  <option>No Trains available currently</option>
-                  {% endif %}
-                </select>
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  name="email"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Phone</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  name="phno"
+                  minlength="10"
+                  maxlength="10"
+                  required
+                />
               </div>
               <div class="row justify-content-center">
-                {% if train %}
-                <button type="submit" id="button1" class="btn btn-primary">
-                  Reset
+                <button type="submit" id="button1" class="btn btn-primarys">
+                  Update
                 </button>
-                {% else %}
-                <button
-                  type="submit"
-                  id="button1"
-                  class="btn btn-primary"
-                  disabled
-                >
-                  Reset
-                </button>
-                {% endif %}
               </div>
             </form>
           </div>
@@ -90,5 +94,4 @@
   </div>
 </div>
 <br /><br />
-
 {% endblock %}
