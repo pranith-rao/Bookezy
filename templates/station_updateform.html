@@ -51,13 +51,14 @@
         <div class="card-header">Update Profile</div>
         <div class="card-body">
           <div class="container">
-            <form method="POST" action="/reg_station">
+            <form method="POST" action="/update_station_profile/{{data.id}}">
               <div class="mb-3" style="margin-top: 10px">
                 <label class="form-label"> Name </label>
                 <input
                   type="text"
                   class="form-control"
                   name="admin_name"
+                  value="{{data.name}}"
                   required
                 />
               </div>
@@ -67,6 +68,7 @@
                   type="email"
                   class="form-control"
                   name="email"
+                  value="{{data.email}}"
                   required
                 />
               </div>
@@ -78,6 +80,7 @@
                   name="phno"
                   minlength="10"
                   maxlength="10"
+                  value="{{data.phone}}"
                   required
                 />
               </div>

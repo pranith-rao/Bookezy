@@ -49,6 +49,7 @@
 				<th scope="col">Seats</th>
 				<th scope="col">Train ID</th>
 				<th scope="col">Location</th>
+				<th scope="col">Date</th>
 				<th scope="col">No of childrens</th>
 				<th scope="col">No of senior citizens</th>
 				<th scope="col">Accept</th>
@@ -64,9 +65,10 @@
 				<td>{{i.seat_no}}</td>
 				<td>{{i.train_id}}</td>
 				<td>{{i.location}}</td>
+				<td>{{i.date}}</td>
 				<td>{{i.child}}</td>
 				<td>{{i.old}}</td>
-				<td><a href="reserve_success/{{i.id}}"> <button class="btn btn-success" type="submit">
+				<td><a href="/reserve_success/{{i.id}}"> <button class="btn btn-success" type="submit">
             <i class="fa fa-check" aria-hidden="true"></i>
           </button></a></td>
 				<td><a href="/reserve_error/{{i.id}}"><button class="btn btn-danger" type="submit">

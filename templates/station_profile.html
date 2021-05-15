@@ -60,14 +60,14 @@
             <img src="static/master1.jpg" class="card-img-top" alt="profile" style="height:270px">
             <div class="card-body">
               <p class="card-text" >
-<p style="margin-bottom: 10px;"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;&nbsp;Adithya L</p>
-<p style="margin-bottom: 8px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;1234567890</p>
-<p ><i class="fa fa-envelope" aria-hidden="true"></i>&nbsp;&nbsp;Adithya@gmail.com</p>
+<p style="margin-bottom: 10px;"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;&nbsp;{{session['admin_name']}}</p>
+<p style="margin-bottom: 8px;"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;{{session['admin_phone']}}</p>
+<p ><i class="fa fa-envelope" aria-hidden="true"></i>&nbsp;&nbsp;{{session['admin_email']}}</p>
 </p><br>
 <h4><span> Click Here To Update</span></h4>
 <br>
 <div style="text-align: center;">
-    <a href="/station_profile_update"><button type="button" class="btn btn-primary" id="button1"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;Update</button></a>
+    <a href="/station_profile_update"><button type="button" class="btn btn-primary" id="button1">Update</button></a>
 
 </div>
    

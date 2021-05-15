@@ -72,7 +72,9 @@ class Train(db.Model):
         return '<Train %r>' % self.train_name
 
 class Seats(db.Model):
-    train_id = db.Column(db.Integer,primary_key=True)
+    id = db.Column(db.Integer,primary_key=True)
+    train_id = db.Column(db.Integer,nullable=False)
+    date = db.Column(db.String(20),nullable=False)
     seats_count = db.Column(db.Integer,nullable=False)
 
     def __repr__(self):
@@ -262,19 +264,38 @@ def user_forpass_form():
 
 @app.route("/add_seat")
 def add_seat():
-    return render_template('station_addseat.html')
+    if 'admin' in session:
+        get_train_info = Train.query.all()
+        return render_template('station_addseat.html',data=get_train_info)
+    else:
+        flash("Session Expired", "error")
+        return redirect(url_for("stationlog"))
 
 @app.route("/station_profile")
 def station_profile():
-    return render_template('station_profile.html')
+    if 'admin' in session:
+        return render_template('station_profile.html')
+    else:
+        flash("Session Expired", "error")
+        return redirect(url_for("stationlog"))
 
 @app.route("/station_profile_update")
 def station_profile_update():
-    return render_template('station_updateform.html')
+    if 'admin' in session:
+        get_station_data = Station.query.filter_by(id=session['admin_id']).first()
+        return render_template('station_updateform.html',data=get_station_data)
+    else:
+        flash("Session Expired", "error")
+        return redirect(url_for("stationlog"))
 
 @app.route("/user_profile_update")
 def user_profile_update():
-    return render_template('user_profupdate.html')
+    if 'user' in session:
+        get_user_data = Users.query.filter_by(id=session['user_id']).first()
+        return render_template('user_profupdate.html',data=get_user_data)
+    else:
+        flash("Session Expired", "error")
+        return redirect(url_for("userlog"))
 
 @app.route("/user_reserve")
 def user_reserve():
@@ -366,6 +387,10 @@ def log_admin():
             checkpass = sha256_crypt.verify(password,response.password)
             if email == response.email and checkpass == True:
                 session['admin'] = True
+                session['admin_id'] = response.id
+                session['admin_name'] = response.name
+                session['admin_phone'] = response.phone
+                session['admin_email'] = response.email
                 flash('You were successfully logged in',"success")
                 return redirect(url_for("stationdash"))
             else:
@@ -541,9 +566,9 @@ def train_submit():
                 name_check = Train.query.filter_by(train_name=train_name).first()
                 if not name_check:
                     train = Train(id=train_id,train_name=train_name,seats=seats,arrival_time=a_time,departure_time=d_time,from_location=from_loc,through_route=through,to_location=to_loc)
-                    seats = Seats(train_id=train_id,seats_count=seats)
+                    # seats = Seats(train_id=train_id,seats_count=seats)
                     db.session.add(train)
-                    db.session.add(seats)
+                    # db.session.add(seats)
                     db.session.commit()
                     flash("Train added successfully","success")
                     return redirect(url_for('stationdash'))
@@ -565,6 +590,7 @@ def train_submit():
 def book_ticket():
     if request.method == 'POST':
         if 'user' in session:
+            id_train = 0
             name = request.form['name']
             email = request.form['email']
             location = request.form['location']
@@ -574,26 +600,37 @@ def book_ticket():
             senior = request.form['senior']
             train_id = request.form['train']
             if name and email:
-                seats = Seats.query.filter_by(train_id=train_id).first()
-                if seats.seats_count == 0:
-                    flash("Sorry No Seats available", "error")
-                    return redirect(url_for("Book_train"))
-                elif int(tot_seats) > seats.seats_count:
-                    flash(f"Only {seats.seats_count} Seats Available","error")
-                    return redirect(url_for("Book_train"))
+                seats = Seats.query.filter_by(train_id=train_id).all()
+                for i in seats:
+                    if i.date == date:
+                        id_train = i.id
+                        break
+                    else:
+                        continue
+                if id_train != 0:
+                    seatss = Seats.query.filter_by(id=id_train).first()
+                    if seatss.seats_count == 0:
+                        flash("Sorry No Seats available", "error")
+                        return redirect(url_for("Book_train"))
+                    elif int(tot_seats) > seatss.seats_count:
+                        flash(f"Only {seatss.seats_count} Seats Available","error")
+                        return redirect(url_for("Book_train"))
+                    else:
+                        updated_seats = seatss.seats_count - int(tot_seats)
+                        seatss.seats_count = int(updated_seats)
+                        t_number = random.randint(999,999999)
+                        db.session.commit()
+                        users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=t_number,train_id=int(train_id),date=date,child=int(child),old=int(senior),status=1)
+                        db.session.add(users)
+                        db.session.commit()
+                        msg = Message("Ticket Confirmation",sender="bookezy13@gmail.com",recipients=[email])
+                        msg.body = "Your ticket was booked successfully. Your ticket number is: "+ str(t_number)
+                        mail.send(msg)
+                        flash("Ticket Booked Successfully","success")
+                        return redirect(url_for("userdash"))
                 else:
-                    updated_seats = seats.seats_count - int(tot_seats)
-                    seats.seats_count = int(updated_seats)
-                    t_number = random.randint(999,999999)
-                    db.session.commit()
-                    users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=t_number,train_id=int(train_id),date=date,child=int(child),old=int(senior),status=1)
-                    db.session.add(users)
-                    db.session.commit()
-                    msg = Message("Ticket Confirmation",sender="bookezy13@gmail.com",recipients=[email])
-                    msg.body = "Your ticket was booked successfully. Your ticket number is: "+ str(t_number)
-                    mail.send(msg)
-                    flash("Ticket Booked Successfully","success")
-                    return redirect(url_for("userdash"))
+                    flash("Booking is not open for your date", "error")
+                    return redirect(url_for("Book_train"))
             else:
                 flash("Name and Email Required","error")
                 return redirect(url_for("Book_train"))
@@ -601,26 +638,43 @@ def book_ticket():
             flash("Session expired","error")
             return redirect(url_for("userlog"))
     else:
-        flash('Unauthorized access','error')
-        return redirect(url_for('home'))
+         flash('Unauthorized access','error')
+         return redirect(url_for('home'))
 
 #list of all trains with reset no.of seats button
 @app.route("/reset")
 def reset():
-    seats = Seats.query.all()
-    return render_template("reset.html",train=seats)
+    if 'admin' in session:
+        seats = Seats.query.all()
+        return render_template("reset.html",train=seats)
+    else:
+        flash("Session expired", "error")
+        return redirect(url_for("stationlog"))
 
 #station admin resets no.of seats
 @app.route("/reset_seats",methods=['POST'])
 def reset_seats():
     if request.method == 'POST':
         if 'admin' in session:
+            id_train = 0
+            date = request.form['date']
             train_id = request.form['train']
-            reset = Seats.query.filter_by(train_id=train_id).first()
-            reset.seats_count = 20
-            db.session.commit()
-            flash("Reset Successfull","success")
-            return redirect(url_for("admdash"))
+            seats = Seats.query.filter_by(train_id=train_id).all()
+            for i in seats:
+                if i.date == date:
+                    id_train = i.id
+                    break
+                else:
+                    continue
+            if id_train != 0:
+                seatss = Seats.query.filter_by(id=id_train).first()
+                seatss.seats_count = 20
+                db.session.commit()
+                flash("Reset Successfull","success")
+                return redirect(url_for("stationdash"))
+            else:
+                flash("Selected train is not sheduled for selected slot","error")
+                return redirect(url_for("reset"))
         else:
             flash("Session expired","error")
             return redirect(url_for("stationlog"))
@@ -700,6 +754,7 @@ def user_login():
             checkpass = sha256_crypt.verify(password,response.password)
             if email == response.email and checkpass == True:
                 session['user'] = True
+                session['user_id'] = response.id
                 session['user_name'] = response.name
                 session['user_email'] = response.email
                 session['user_phone'] = response.phone
@@ -769,28 +824,41 @@ def reserve_ticket():
 @app.route("/reserve_success/<int:id>")
 def reserve_success(id):
     if 'admin' in session:
+        id_train = 0
         update_status = Book.query.filter_by(id=id).first()
         train_id = update_status.train_id
         tot_seats = update_status.seat_no
         email = update_status.email
         t_number = update_status.ticket_no
-        seats = Seats.query.filter_by(train_id=train_id).first()
-        if seats.seats_count == 0:
-            flash("No Seats available", "error")
-            return redirect(url_for("booklist"))
-        elif int(tot_seats) > seats.seats_count:
-            flash(f"Only {seats.seats_count} Seats Available", "error")
-            return redirect(url_for("booklist"))
+        date = update_status.date
+        seats = Seats.query.filter_by(train_id=train_id).all()
+        for i in seats:
+            if i.date == date:
+                id_train = i.id
+                break
+            else:
+                continue
+        if id_train != 0:
+            seatss = Seats.query.filter_by(id=id_train).first()
+            if seatss.seats_count == 0:
+                flash("No Seats available", "error")
+                return redirect(url_for("booklist"))
+            elif int(tot_seats) > seatss.seats_count:
+                flash(f"Only {seatss.seats_count} Seats Available", "error")
+                return redirect(url_for("booklist"))
+            else:
+                updated_seats = seatss.seats_count - int(tot_seats)
+                seatss.seats_count = int(updated_seats)
+                db.session.commit()
+                update_status.status = 1
+                db.session.commit()
+                msg = Message("Reservation Update",sender="bookezy13@gmail.com",recipients=[email])
+                msg.body = "Your reservation is successfully. Ticket number is "+str(t_number)
+                mail.send(msg)
+                flash("Ticket Booked", "success")
+                return redirect(url_for("booklist"))
         else:
-            updated_seats = seats.seats_count - int(tot_seats)
-            seats.seats_count = int(updated_seats)
-            db.session.commit()
-            update_status.status = 1
-            db.session.commit()
-            msg = Message("Reservation Update",sender="bookezy13@gmail.com",recipients=[email])
-            msg.body = "Your reservation is successfully. Ticket number is "+str(t_number)
-            mail.send(msg)
-            flash("Ticket Booked", "success")
+            flash("Booking is not open for your date", "error")
             return redirect(url_for("booklist"))
     else:
         flash("Session Expired","error")
@@ -917,6 +985,32 @@ def change_user_pass():
     else:
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
+
+
+@app.route("/add_seat_data",methods=['POST'])
+def add_seat_data():
+    if 'admin' in session:
+        date = request.form['date']
+        seats = request.form['seat']
+        train_id = request.form['train']
+        seats = Seats(train_id=train_id,date=date, seats_count=seats)
+        db.session.add(seats)
+        db.session.commit()
+        flash("Train Added","success")
+        return redirect(url_for("stationdash"))
+    else:
+        flash("Session Expired", "error")
+        return redirect(url_for("stationlog"))
+
+
+@app.route("/update_user_profile/<int:id>",methods=['POST'])
+def update_user_profile(id):
+    pass
+
+
+@app.route("/update_station_profile/<int:id>",methods=['POST'])
+def update_station_profile(id):
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True,port=9876)

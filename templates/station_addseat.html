@@ -37,22 +37,26 @@
         <div class="card-header">Add Seat</div>
         <div class="card-body">
           <div class="container">
-            <form action="/change_station_pass" method="POST">
+            <form action="/add_seat_data" method="POST">
               <div class="mb-3" style="margin-top: 10px">
                 <label class="form-label">Date</label>
-                <input type="date" name="name" class="form-control" required />
+                <input type="date" name="date" class="form-control" required />
               </div>
               <div class="mb-3">
                 <label class="form-label">No. Of Seats </label>
-                <input type="text" class="form-control" name="pass1" required />
+                <input type="text" class="form-control" name="seat"  placeholder="eg:20" required />
               </div>
               <div class="mb-3">
                 <label class="form-label"> Train Id </label>
-                <select class="form-select" aria-label="Default select example">
-                  <option selected>Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select class="form-select" aria-label="Default select example" name="train">
+                  {% if data %}
+                  {% for i in data %}
+                  <option>{{i.id}}</option>
+                  {% endfor %}
+                  {% else %}
+                  <option>Currently no trains Available</option>
+                  {% endif %}
+
                 </select>
               </div>
 
