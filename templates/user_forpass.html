@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 <!--title part-->
-{% block title %}Admin Forgot Password{% endblock %}
+{% block title %}User Forgot Password{% endblock %}
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
@@ -48,21 +48,19 @@
 				<div class="card">
 					<div class="card-body">
 						<h4>User Change Password</h4>
-
 						<div class="container">
 							<div class="row justify-content-center">
-								<form>
+								<form method="POST" action="/user_send_otp">
 									<div class="mb-3" style="margin-top: 30px">
 										<label class="form-label">Enter Your Email</label>
 										<input
 											type="email"
 											class="form-control"
-											name="name"
+											name="email"
 											placeholder="E-mail"
 											required
 										/>
 									</div>
-
 									<div class="row justify-content-center">
 										<button type="submit" id="button1" class="btn btn-primarys">Submit</button>
 									</div>

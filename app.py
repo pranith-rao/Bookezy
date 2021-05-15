@@ -19,7 +19,6 @@ app.config['MAIL_PASSWORD'] = "pradeep13"
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 
-
 db = SQLAlchemy(app)
 mail = Mail(app)
 
@@ -98,6 +97,7 @@ class Book(db.Model):
 
 #db.create_all()
 #db.drop_all()
+
 @app.route("/admreg")
 def admreg():
     return render_template('adminreg.html')
@@ -541,7 +541,6 @@ def book_ticket():
 
 @app.route("/reset")
 def reset():
-
     seats = Seats.query.all()
     return render_template("reset.html",train=seats)
 
@@ -730,6 +729,87 @@ def cancel(id):
     print(final_date)
 
 
+#user forgot password
+@app.route("/user_send_otp",methods=['POST'])
+def user_send_otp():
+    if request.method == 'POST':
+        email = request.form['email']
+        email_check = Users.query.filter_by(email=email).first()
+        if email_check:
+            session['user'] = True
+            session['email'] = email_check.email
+            otp = random.randint(000000,999999)
+            session['otp'] = otp
+            msg = Message('OTP for Password change',sender="bookezy13@gmail.com",recipients=[email])
+            msg.body = "Dear User, your verification code is: " + str(otp)
+            mail.send(msg)
+            flash("OTP sent","success")
+            return redirect(url_for("user_otp"))
+        else:
+            flash("Email ID not registered. Please check your email id or create a new account","error")
+            return redirect(url_for('userlog'))
+
+@app.route('/user_verify',methods=['POST'])
+def user_verify():
+    if request.method == "POST":
+        if 'user' in session:
+            user_otp = request.form['user_otp']
+            if session['otp'] == int(user_otp):
+                return redirect(url_for("user_forpass_form"))
+            else:
+                flash("Wrong OTP. Please try again","error")
+                return redirect(url_for("user_otp"))
+        else:
+            flash("Session Expired","error")
+            return redirect(url_for('userlog'))
+
+@app.route('/change_user_pass',methods=['POST'])
+def change_user_pass():
+    if request.method == "POST":
+        if 'user' in session:
+            pass1 = request.form['pass1']
+            flag = 0
+            while True:  
+                if (len(pass1)<8):
+                    flag = -1
+                    break
+                elif not re.search("[a-z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[A-Z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[0-9]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[_@$]", pass1):
+                    flag = -1
+                    break
+                elif re.search("\\s", pass1):
+                    flag = -1
+                    break
+                else:
+                    flag = 0
+                    break
+            if flag ==-1:
+                flash("Not a Valid Password","error")
+                return redirect(url_for("user_forpass_form"))
+            pass2 = request.form['pass2']
+            if pass1 == pass2:
+                hash_pass = sha256_crypt.hash(pass1)
+                data = Users.query.filter_by(email=session['email']).first()
+                data.password = hash_pass
+                db.session.commit()
+                session.pop('user',None)
+                session.pop('email',None)
+                flash("Password changed successfully","success")
+                return redirect(url_for("userlog"))
+            else:
+                flash("Passwords dont match",'error')
+                return redirect(url_for('user_forpass_form'))
+        else:
+            flash("Session Expired","error")
+            return redirect(url_for('userlog'))
 
 if __name__ == '__main__':
     app.run(debug=True,port=9876)
