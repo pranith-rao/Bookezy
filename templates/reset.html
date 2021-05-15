@@ -54,16 +54,13 @@
 							<div class="mb-3">
 								<label class="form-label">Train ID </label>
 								<select class="form-select" aria-label="Default select example" name="train" required>
-									{% if train %}
-  									{% for i in train %}
-								  <option>{{i.train_id}}</option>
-									{% endfor %}
-									{% else %}
+									{% if train %} {% for i in train %}
+									<option>{{i.train_id}}</option>
+									{% endfor %} {% else %}
 									<option>No Trains available currently</option>
 									{% endif %}
 								</select>
 							</div>
-
 							<div class="row justify-content-center">
 								{% if train %}
 								<button type="submit" id="button1" class="btn btn-primary">Reset</button>
