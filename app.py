@@ -321,6 +321,7 @@ def mainadmin_log():
             flash('Invalid Credentials','error')
             return redirect(url_for('adminlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -363,6 +364,7 @@ def reg_station():
             flash("Session Expired", "error")
             return redirect(url_for('adminlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -397,6 +399,7 @@ def log_admin():
                 flash('Invalid Credentials',"error")
                 return redirect(url_for("stationlog"))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -420,6 +423,7 @@ def admin_send_otp():
             flash("Email ID not registered. Please contact Main Admin","error")
             return redirect(url_for('stationlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -438,6 +442,7 @@ def admin_verify():
             flash("Session Expired","error")
             return redirect(url_for('stationlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -490,6 +495,7 @@ def change_admin_pass():
             flash("Session Expired","error")
             return redirect(url_for('stationlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -545,6 +551,7 @@ def change_station_pass():
             flash("Session Expired","error")
             return redirect(url_for('stationlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -582,6 +589,7 @@ def train_submit():
             flash("Session Expired","error")
             return redirect(url_for('stationlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -638,8 +646,9 @@ def book_ticket():
             flash("Session expired","error")
             return redirect(url_for("userlog"))
     else:
-         flash('Unauthorized access','error')
-         return redirect(url_for('home'))
+        session.clear()
+        flash('Unauthorized access','error')
+        return redirect(url_for('home'))
 
 #list of all trains with reset no.of seats button
 @app.route("/reset")
@@ -679,6 +688,7 @@ def reset_seats():
             flash("Session expired","error")
             return redirect(url_for("stationlog"))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -737,6 +747,7 @@ def user_register():
             flash("Email ID already registered","error")
             return redirect(url_for('userreg'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -764,6 +775,7 @@ def user_login():
                 flash('Invalid Credentials',"error")
                 return redirect(url_for("userlog"))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -784,6 +796,7 @@ def enquiry():
                 flash("Booking is Done","success")
                 return redirect(url_for("userdash"))
         else:
+            session.clear()
             flash('Unauthorized access','error')
             return redirect(url_for('home'))
     else:
@@ -813,6 +826,7 @@ def reserve_ticket():
                 flash("Name and Email Required","error")
                 return redirect(url_for("Book_train"))
         else:
+            session.clear()
             flash('Unauthorized access','error')
             return redirect(url_for('home'))
     else:
@@ -913,6 +927,7 @@ def user_send_otp():
             flash("Email ID not registered. Please check your email id or create a new account","error")
             return redirect(url_for('userlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -931,6 +946,7 @@ def user_verify():
             flash("Session Expired","error")
             return redirect(url_for('userlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -983,6 +999,7 @@ def change_user_pass():
             flash("Session Expired","error")
             return redirect(url_for('userlog'))
     else:
+        session.clear()
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
@@ -1002,15 +1019,140 @@ def add_seat_data():
         flash("Session Expired", "error")
         return redirect(url_for("stationlog"))
 
-
+#user profile update
 @app.route("/update_user_profile/<int:id>",methods=['POST'])
 def update_user_profile(id):
-    pass
+    if 'user' in session:
+        if request.method == 'POST':
+            name = request.form['name']
+            email = request.form['email']
+            phno = request.form['phno']
+            address = request.form['address']
+            data = Users.query.filter_by(id=id).first()
+            email_check = Users.query.filter_by(email=email).first()
+            if email_check:
+                if(email_check.id != id):
+                    flash("Email ID is already used by someone else","error")
+                    data = Users.query.filter_by(id=id).first()
+                    return render_template('user_profupdate.html',data=data)
+                elif(email_check.id == id):
+                    data.email = email
+                    data.name = name
+                    phno_check = Users.query.filter_by(phone=phno).first()
+                    if phno_check:
+                        if(phno_check.id != id):
+                            flash("Phone number is already used by someone else","error")
+                            data = Users.query.filter_by(id=id).first()
+                            return render_template('user_profupdate.html',data=data)
+                        elif(phno_check.id == id):
+                            data.phone = phno
+                            data.address = address
+                            db.session.commit()
+                            session.clear()
+                            flash("User details updated successfully.Login again to see changes","success")
+                            return redirect(url_for("userlog"))
+                    else:
+                        data.phone = phno
+                        data.address = address
+                        db.session.commit()
+                        session.clear()
+                        flash("User details updated successfully.Login again to see changes","success")
+                        return redirect(url_for("userlog"))
+            else:
+                data.email = email
+                data.name = name
+                phno_check = Users.query.filter_by(phone=phno).first()
+                if phno_check:
+                    if(phno_check.id != id):
+                        flash("Phone number is already used by someone else","error")
+                        data = Users.query.filter_by(id=id).first()
+                        return render_template('user_profupdate.html',data=data)
+                    elif(phno_check.id == id):
+                        data.phone = phno
+                        data.address = address
+                        db.session.commit()
+                        session.clear()
+                        flash("User details updated successfully.Login again to see changes","success")
+                        return redirect(url_for("userlog"))
+                else:
+                    data.phone = phno
+                    data.address = address
+                    db.session.commit()
+                    session.clear()
+                    flash("User details updated successfully.Login again to see changes","success")
+                    return redirect(url_for("userlog"))
+        else:
+            session.clear()
+            flash('Unauthorized access','error')
+            return redirect(url_for('home'))
+    else:
+        flash("Session Expired","error")
+        return redirect(url_for('userlog'))
 
-
+#station admin profile update
 @app.route("/update_station_profile/<int:id>",methods=['POST'])
 def update_station_profile(id):
-    pass
+    if 'admin' in session:
+        if request.method == 'POST':
+            name = request.form['name']
+            email = request.form['email']
+            phno = request.form['phno']
+            data = Station.query.filter_by(id=id).first()
+            email_check = Station.query.filter_by(email=email).first()
+            if email_check:
+                if(email_check.id != id):
+                    flash("Email ID is already used by someone else","error")
+                    data = Station.query.filter_by(id=id).first()
+                    return render_template('station_updateform.html',data=data)
+                elif(email_check.id == id):
+                    data.email = email
+                    data.name = name
+                    phno_check = Station.query.filter_by(phone=phno).first()
+                    if phno_check:
+                        if(phno_check.id != id):
+                            flash("Phone number is already used by someone else","error")
+                            data = Station.query.filter_by(id=id).first()
+                            return render_template('station_updateform.html',data=data)
+                        elif(phno_check.id == id):
+                            data.phone = phno
+                            db.session.commit()
+                            session.clear()
+                            flash("Station admin details updated successfully.Login again to see changes","success")
+                            return redirect(url_for("stationlog"))
+                    else:
+                        data.phone = phno
+                        db.session.commit()
+                        session.clear()
+                        flash("Station admin details updated successfully.Login again to see changes","success")
+                        return redirect(url_for("stationlog"))
+            else:
+                data.email = email
+                data.name = name
+                phno_check = Station.query.filter_by(phone=phno).first()
+                if phno_check:
+                    if(phno_check.id != id):
+                        flash("Phone number is already used by someone else","error")
+                        data = Station.query.filter_by(id=id).first()
+                        return render_template('station_updateform.html',data=data)
+                    elif(phno_check.id == id):
+                        data.phone = phno
+                        db.session.commit()
+                        session.clear()
+                        flash("Station admin details updated successfully.Login again to see changes","success")
+                        return redirect(url_for("stationlog"))
+                else:
+                    data.phone = phno
+                    db.session.commit()
+                    session.clear()
+                    flash("Station admin details updated successfully.Login again to see changes","success")
+                    return redirect(url_for("stationlog"))
+        else:
+            session.clear()
+            flash('Unauthorized access','error')
+            return redirect(url_for('home'))
+    else:
+        flash("Session Expired","error")
+        return redirect(url_for('stationlog'))
 
 if __name__ == '__main__':
     app.run(debug=True,port=9876)
