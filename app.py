@@ -898,13 +898,43 @@ def reserve_error(id):
 
 @app.route("/cancel/<int:id>")
 def cancel(id):
-    check_date = Book.query.filter_by(id=id).first()
-    user_date = check_date.date
-    da = datetime.datetime.strptime(user_date,'%Y-%m-%d')
+    if 'user' in session:
+        id_train = 0
+        check_date = Book.query.filter_by(id=id).first()
+        user_date = check_date.date
+        seats = check_date.seat_no
+        train = check_date.train_id
+        ticket = check_date.ticket_no
+        da = datetime.datetime.strptime(user_date,'%Y-%m-%d')
+        current = datetime.datetime.now()
+        tot = da-current
+        if da < current:
+            if tot.days <= 0:
+                flash("Ticket cannot be cancelled now","error")
+                return redirect(url_for("History"))
+        else:
+            change_seats = Seats.query.filter_by(train_id = train).all()
+            for i in change_seats:
+                if i.date == user_date:
+                    id_train = i.id
+                    break
+                else:
+                    continue
+            if id_train !=0:
+                up_seats = Seats.query.filter_by(id=id_train).first()
+                new_seats = up_seats.seats_count + int(seats)
+                up_seats.seats_count = new_seats
 
-    current = datetime.datetime.now()
-    tot = da-current
-
+                db.session.delete(check_date)
+                db.session.commit()
+                flash("cancellation successful","success")
+                return redirect(url_for("userdash"))
+            else:
+                flash("some error occured","error")
+                return redirect(url_for("History"))
+    else:
+        flash('Session Expired', 'error')
+        return redirect(url_for('userlog'))
 
 
 #user forgot password
@@ -1003,18 +1033,22 @@ def change_user_pass():
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
-
+#station admin add seat
 @app.route("/add_seat_data",methods=['POST'])
 def add_seat_data():
     if 'admin' in session:
-        date = request.form['date']
-        seats = request.form['seat']
-        train_id = request.form['train']
-        seats = Seats(train_id=train_id,date=date, seats_count=seats)
-        db.session.add(seats)
-        db.session.commit()
-        flash("Train Added","success")
-        return redirect(url_for("stationdash"))
+        if request.method == 'POST':
+            date = request.form['date']
+            seats = request.form['seat']
+            train_id = request.form['train']
+            seats = Seats(train_id=train_id,date=date, seats_count=seats)
+            db.session.add(seats)
+            db.session.commit()
+            flash("Train Added","success")
+            return redirect(url_for("stationdash"))
+        else:
+            flash('Unauthorized access', 'error')
+            return redirect(url_for('home'))
     else:
         flash("Session Expired", "error")
         return redirect(url_for("stationlog"))
