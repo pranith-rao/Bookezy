@@ -896,6 +896,7 @@ def reserve_error(id):
         flash("Session Expired", "error")
         return redirect(url_for("stationlog"))
 
+#cancel ticet after user login
 @app.route("/cancel/<int:id>")
 def cancel(id):
     if 'user' in session:
@@ -910,7 +911,7 @@ def cancel(id):
         tot = da-current
         if da < current:
             if tot.days <= 0:
-                flash("Ticket cannot be cancelled now","error")
+                flash("Ticket cannot be cancelled before 24hrs","error")
                 return redirect(url_for("History"))
         else:
             change_seats = Seats.query.filter_by(train_id = train).all()
@@ -924,7 +925,6 @@ def cancel(id):
                 up_seats = Seats.query.filter_by(id=id_train).first()
                 new_seats = up_seats.seats_count + int(seats)
                 up_seats.seats_count = new_seats
-
                 db.session.delete(check_date)
                 db.session.commit()
                 flash("cancellation successful","success")
