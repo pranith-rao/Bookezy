@@ -53,32 +53,45 @@
 						<form action="/book_ticket" method="post">
 							<div class="mb-3" style="margin-top: 10px">
 								<label class="form-label">Name</label>
-								<input type="text" class="form-control" name="name" value="{{session['user_name']}}"   readonly/>
+								<input
+									type="text"
+									class="form-control"
+									name="name"
+									value="{{session['user_name']}}"
+									readonly
+								/>
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Email </label>
-								<input type="email" class="form-control" name="email"  value="{{session['user_email']}}"   readonly/>
+								<input
+									type="email"
+									class="form-control"
+									name="email"
+									value="{{session['user_email']}}"
+									readonly
+								/>
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Train ID </label>
 								<select class="form-select" aria-label="Default select example" name="train" required>
-									{% if train %}
-  <									{% for i in train %}
-								  <option>{{i.train_id}}</option>
-									{% endfor %}
-									{% else %}
+									{% if train %} < {% for i in train %}
+									<option>{{i.train_id}}</option>
+									{% endfor %} {% else %}
 									<option>Currently not accepting</option>
 									{% endif %}
 								</select>
 							</div>
 							<div class="mb-3">
 								<label class="form-label">To Location </label>
-								<select class="form-select" aria-label="Default select example" name="location" required>
-									{% if location %}
-  <									{% for i in location %}
-								  <option>{{i.to_location}}</option>
-									{% endfor %}
-									{% else %}
+								<select
+									class="form-select"
+									aria-label="Default select example"
+									name="location"
+									required
+								>
+									{% if location %} < {% for i in location %}
+									<option>{{i.to_location}}</option>
+									{% endfor %} {% else %}
 									<option>Currently not accepting</option>
 									{% endif %}
 								</select>
@@ -86,7 +99,13 @@
 
 							<div class="mb-3">
 								<label class="form-label">Total Seats </label>
-								<input type="number" class="form-control" placeholder="No of seats" name="seat" required />
+								<input
+									type="number"
+									class="form-control"
+									placeholder="No of seats"
+									name="seat"
+									required
+								/>
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Day Of Travel </label>
@@ -97,7 +116,7 @@
 							<br />
 							<div class="mb-3">
 								<label class="form-label">Total child-(Below 12)</label>
-								<input type="number" class="form-control"  name="child" required/>
+								<input type="number" class="form-control" name="child" required />
 							</div>
 							<div class="mb-3">
 								<label class="form-label">Total Senior Citizen-(above 60)</label>
@@ -108,7 +127,9 @@
 								{% if train and location %}
 								<button type="submit" id="button1" class="btn btn-primary">Book</button>
 								{% else %}
-								<button type="submit" id="button1" class="btn btn-primary" disabled>Not Accepting</button>
+								<button type="submit" id="button1" class="btn btn-primary" disabled>
+									Not Accepting
+								</button>
 								{% endif %}
 							</div>
 						</form>

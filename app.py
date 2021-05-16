@@ -168,6 +168,10 @@ def booklist():
 def changepass_station():
     return render_template('change_pass_station.html')
 
+@app.route("/changepass_user")
+def changepass_user():
+    return render_template('change_pass_user.html')   
+
 @app.route("/userreg")
 def userreg():
     return render_template('userreg.html')
@@ -226,10 +230,6 @@ def userlog():
 def stationlog():
     return render_template('Station_log.html')
 
-@app.route("/admin_forpass")
-def admin_forpass():
-    return render_template('Admin_forpass.html')
-
 @app.route("/station_forpass")
 def station_forpass():
     return render_template('station_forpass.html')
@@ -238,10 +238,6 @@ def station_forpass():
 def user_forpass():
     return render_template('user_forpass.html')
 
-@app.route("/admin_otp")
-def admin_otp():
-    return render_template('admin_otp.html')
-
 @app.route("/station_otp")
 def station_otp():
     return render_template('station_otp.html')
@@ -249,10 +245,6 @@ def station_otp():
 @app.route("/user_otp")
 def user_otp():
     return render_template('user_otp.html')
-
-@app.route("/admin_forpass_form")
-def admin_forpass_form():
-    return render_template('Admin_forpass_form.html')
 
 @app.route("/station_forpass_form")
 def station_forpass_form():
@@ -313,7 +305,7 @@ def mainadmin_log():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        if email == 'mainadmin@gmail.com' and password == '1234567890':
+        if email == 'mainadmin@gmail.com' and password == 'pradeep123':
             session['mainadmin'] = True
             flash('Login Successfull','success')
             return redirect(url_for('admdash'))
@@ -573,9 +565,7 @@ def train_submit():
                 name_check = Train.query.filter_by(train_name=train_name).first()
                 if not name_check:
                     train = Train(id=train_id,train_name=train_name,seats=seats,arrival_time=a_time,departure_time=d_time,from_location=from_loc,through_route=through,to_location=to_loc)
-                    # seats = Seats(train_id=train_id,seats_count=seats)
                     db.session.add(train)
-                    # db.session.add(seats)
                     db.session.commit()
                     flash("Train added successfully","success")
                     return redirect(url_for('stationdash'))
@@ -779,6 +769,62 @@ def user_login():
         flash('Unauthorized access','error')
         return redirect(url_for('home'))
 
+#user change password after login            
+@app.route('/user_change_pass',methods=['POST'])
+def user_change_pass():
+    if request.method == 'POST':
+        if 'user' in session:
+            email = request.form['email']
+            pass1 = request.form['pass1']
+            flag = 0
+            while True:  
+                if (len(pass1)<8):
+                    flag = -1
+                    break
+                elif not re.search("[a-z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[A-Z]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[0-9]", pass1):
+                    flag = -1
+                    break
+                elif not re.search("[_@$]", pass1):
+                    flag = -1
+                    break
+                elif re.search("\\s", pass1):
+                    flag = -1
+                    break
+                else:
+                    flag = 0
+                    break
+            if flag ==-1:
+                flash("Not a Valid Password","error")
+                return redirect(url_for("changepass_user"))
+            pass2 = request.form['pass2']
+            if pass1 == pass2:
+                email_check = Users.query.filter_by(email=email).first()
+                if email_check:
+                    hash_pass = sha256_crypt.hash(pass1)
+                    email_check.password = hash_pass
+                    db.session.commit()
+                    flash("Password changed successfully","success")
+                    return redirect(url_for("userdash"))
+                else:
+                    flash("Check your email and try again","error")
+                    return redirect(url_for("changepass_user"))
+            else:
+                flash("Passwords dont match",'error')
+                return redirect(url_for('changepass_user'))
+        else:
+            flash("Session Expired","error")
+            return redirect(url_for('userlog'))
+    else:
+        session.clear()
+        flash('Unauthorized access','error')
+        return redirect(url_for('home'))
+
 #ticket enquiry after login
 @app.route("/enquiry",methods=['POST'])
 def enquiry():
@@ -816,10 +862,14 @@ def reserve_ticket():
             child = request.form['child']
             senior = request.form['senior']
             train_id = request.form['train']
+            t_number = random.randint(999,999999)
             if name and email:
-                users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=random.randint(999,999999),train_id=int(train_id),date=date,child=int(child),old=int(senior),status=0)
+                users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=t_number,train_id=int(train_id),date=date,child=int(child),old=int(senior),status=0)
                 db.session.add(users)
                 db.session.commit()
+                msg = Message('Ticket Reservation',sender="bookezy13@gmail.com",recipients=[email])
+                msg.body = "Your reservation request has been sent. Use this ticket number "+str(t_number)+" to enquire the status of your reservation"
+                mail.send(msg)
                 flash("Request sent for reservation","success")
                 return redirect(url_for("userdash"))
             else:
@@ -1044,7 +1094,7 @@ def add_seat_data():
             seats = Seats(train_id=train_id,date=date, seats_count=seats)
             db.session.add(seats)
             db.session.commit()
-            flash("Train Added","success")
+            flash(str(seats)+" Added Successfully","success")
             return redirect(url_for("stationdash"))
         else:
             flash('Unauthorized access', 'error')
