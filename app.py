@@ -254,6 +254,14 @@ def station_forpass_form():
 def user_forpass_form():
     return render_template('user_forpass_form.html')
 
+@app.route("/index")
+def index():
+    return render_template('index.html')
+
+@app.route("/user_profile")
+def user_profile():
+    return render_template('user_profile.html')
+
 @app.route("/add_seat")
 def add_seat():
     if 'admin' in session:

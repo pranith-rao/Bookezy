@@ -4,105 +4,182 @@
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
-	.card {
-		margin-top: 70px;
-	}
-	#button {
-		margin-top: 20px;
-		width: 170px;
-		border-radius: 50px;
-		background-color: #5e35b1;
-		color: white;
-		margin-bottom: 20px;
-	}
-	#button1 {
-		margin-top: 20px;
-		width: 150px;
-		border-radius: 50px;
-		background-color: #5e35b1;
-		color: white;
-		margin-bottom: 20px;
-	}
-	h4 {
-		font-family: Bahnschrift SemiBold;
-		text-decoration: none;
-		color: #7e57c2;
-		margin-top: 10px;
-		text-align: center;
-		font-size: 28px;
-	}
-	p a {
-		font-family: Bahnschrift SemiBold;
-		text-decoration: none;
-		color: #7e57c2;
-	}
+  .card {
+    margin-top: 70px;
+  }
+  #button {
+    margin-top: 20px;
+    width: 170px;
+    border-radius: 50px;
+    background: url("static/back1.jpg") no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: white;
+    margin-bottom: 20px;
+  }
+
+  h4 {
+    font-family: Bahnschrift SemiBold;
+    text-decoration: none;
+    color: #7e57c2;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 28px;
+  }
+  p a {
+    font-family: Bahnschrift SemiBold;
+    text-decoration: none;
+    color: #7e57c2;
+  }
+  h3 {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #000;
+    line-height: 0.1em;
+    margin: 10px 0 20px;
+    font-family: Bahnschrift SemiBold;
+    margin-top: 15px;
+    margin-bottom: 35px;
+  }
+
+  h3 span {
+    background: #fff;
+    padding: 0 10px;
+  }
+  #google {
+    text-transform: none;
+    width: 300px;
+    border-radius: 50px;
+    background: url("static/back1.jpg") no-repeat;
+    background-position: center;
+    background-size: cover;
+    color: white;
+  }
+  .card-header {
+    background: url("static/back1.jpg") no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 70px;
+    font-family: Bahnschrift SemiBold;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    font-size: 28px;
+  }
+
+  @media (min-width: 300px) and (max-width: 350px) {
+    #google {
+      width: 200px;
+    }
+  }
+  @media (min-width: 600px) and (max-width: 800px) {
+    #google {
+      width: 200px;
+    }
+  }
 </style>
 {% endblock %}
 <!--content part-->
 {% block content %}
 <div
-	style="
-		background: url('static/background.jpg') no-repeat;
-		background-size: cover;
-		background-position: center;
-		height: 722px;
-	"
+  style="
+    background: url('static/background.jpg') no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: 722px;
+  "
 >
-	<div class="container">
-		<div class="row justify-content-center">
-			<div class="col-sm-5">
-				<div class="card">
-					<div class="card-body">
-						<h4>User Login</h4>
-						<div class="container">
-							<div class="row justify-content-center">
-								<form action="/user_login" method="POST">
-									<div class="input-group mb-3" style="margin-top: 30px">
-										<span class="input-group-text" id="basic-addon1"
-											><i class="fa fa-envelope"></i
-										></span>
-										<input
-											type="email"
-											class="form-control"
-											placeholder="E-mail"
-											name="email"
-											required
-										/>
-									</div>
-									<div class="input-group mb-3" style="margin-top: 35px">
-										<span class="input-group-text" id="basic-addon1"
-											><i class="fa fa-lock" style="font-size: 22px"></i
-										></span>
-										<input
-											type="password"
-											class="form-control"
-											placeholder="Password"
-											name="password"
-											required
-										/>
-									</div>
-									<div class="row justify-content-center">
-										<button type="submit" id="button" class="btn btn-primarys">Submit</button>
-									</div>
-								</form>
-							</div>
-						</div>
-						<div class="row">
-							<a style="text-decoration: none; color: #7e57c2; font-weight: bold" class="col-6" href="/"
-								><i class="fas fa-arrow-left"></i> Back</a
-							>
-							<a
-								style="text-decoration: none; text-align: right; color: #7e57c2; font-weight: bold"
-								class="col-6"
-								href="/user_forpass"
-								>Forgot Password?</a
-							>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-5">
+        <div class="card">
+          <div class="card-header">
+            <p style="margin-top: 6px">User Login</p>
+          </div>
+          <div class="card-body">
+            <div class="container">
+              <div class="row justify-content-center">
+                <form action="/user_login" method="POST">
+                  <div class="input-group mb-3" style="margin-top: 30px">
+                    <span class="input-group-text" id="basic-addon1"
+                      ><i class="fa fa-envelope"></i
+                    ></span>
+                    <input
+                      type="email"
+                      class="form-control"
+                      placeholder="E-mail"
+                      name="email"
+                      required
+                    />
+                  </div>
+                  <div class="input-group mb-3" style="margin-top: 35px">
+                    <span class="input-group-text" id="basic-addon1"
+                      ><i class="fa fa-lock" style="font-size: 22px"></i
+                    ></span>
+                    <input
+                      type="password"
+                      class="form-control"
+                      placeholder="Password"
+                      name="password"
+                      required
+                    />
+                  </div>
+                  <div class="row justify-content-center">
+                    <button type="submit" id="button" class="btn btn-primarys">
+                      Submit
+                    </button>
+                  </div>
+                  <div style="text-align: end">
+                    <a
+                      style="
+                        text-decoration: none;
+                        text-align: right;
+                        color: #7e57c2;
+                        font-weight: bold;
+                      "
+                      class="col-6"
+                      href="/user_forpass"
+                      >Forgot Password?</a
+                    >
+                  </div>
+                </form>
+              </div>
+            </div>
+            <h3><span> OR</span></h3>
+            <div style="text-align: center">
+              <button
+                class="btn btn-outline-dark"
+                href=""
+                role="button"
+                id="google"
+              >
+                <img
+                  width="20px"
+                  style="margin-bottom: 3px; margin-right: 5px"
+                  alt="Google sign-in"
+                  src="static/go.png"
+                />&nbsp; Login with Google
+              </button>
+            </div>
+            <div style="text-align: center; margin-top: 10px">
+              <p>
+                Dont Have An Account?
+                <a href="/userreg" style="text-decoration: none">Register</a>
+              </p>
+            </div>
+            <div class="row">
+              <a
+                style="text-decoration: none; color: #7e57c2; font-weight: bold"
+                class="col-6"
+                href="/"
+                ><i class="fas fa-arrow-left"></i> Back</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

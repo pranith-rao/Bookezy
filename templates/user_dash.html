@@ -4,126 +4,143 @@
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
-	#img {
-		height: 250px;
-	}
-	#img1 {
-		height: 190px;
-	}
-	.card-title {
-		text-align: center;
-		font-family: Bahnschrift SemiBold;
-		font-size: 25px;
-	}
-	#button1 {
-		width: 200px;
-		background-color: #1565c0;
-		color: white;
-		margin-bottom: 5px;
-	}
-	@media (min-width: 300px) and (max-width: 350px) {
-		#card1 {
-			margin-top: 20px;
-		}
-	}
-	/*meduim mobile phones*/
-	@media (min-width: 350px) and (max-width: 400px) {
-		#card1 {
-			margin-top: 20px;
-		}
-	}
-	/*large mobile phones*/
-	@media (min-width: 400px) and (max-width: 500px) {
-		#card1 {
-			margin-top: 20px;
-		}
-	}
-	/*tablet*/
+  #img {
+    height: 250px;
+    border-top-right-radius: 25px;
+  }
+  #img1 {
+    height: 250px;
+    border-top-right-radius: 25px;
+  }
+  .card-title {
+    text-align: center;
+    font-family: Bahnschrift SemiBold;
+    font-size: 25px;
+  }
+  .card {
+    border-bottom-left-radius: 25px;
+    border-top-right-radius: 25px;
+  }
+  #button1 {
+    width: 200px;
+    background-color: #1565c0;
+    color: white;
+    margin-bottom: 5px;
+  }
+  @media (min-width: 300px) and (max-width: 350px) {
+    #card1 {
+      margin-top: 20px;
+    }
+  }
+  /*meduim mobile phones*/
+  @media (min-width: 350px) and (max-width: 400px) {
+    #card1 {
+      margin-top: 20px;
+    }
+  }
+  /*large mobile phones*/
+  @media (min-width: 400px) and (max-width: 500px) {
+    #card1 {
+      margin-top: 20px;
+    }
+  }
+  /*tablet*/
 
-	/*tablet mode*/
-	@media (min-width: 600px) and (max-width: 800px) {
-		.card-title {
-			font-size: 20px;
-		}
-	}
-	@media (min-width: 800px) and (max-width: 1050px) {
-	}
-	#borderless td,
-	#borderless th {
-		border: none;
-	}
+  /*tablet mode*/
+  @media (min-width: 600px) and (max-width: 800px) {
+    .card-title {
+      font-size: 20px;
+    }
+  }
+  @media (min-width: 800px) and (max-width: 1050px) {
+  }
+  .card-text {
+    font-family: Bahnschrift;
+    margin-top: 15px;
+    font-weight: lighter;
+  }
 </style>
 {% endblock %}
 <!--content part-->
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e8eaf6">
-	<div class="container-fluid">
-		<form class="d-flex mx-auto" action="/enquiry" method="post">
-			<input
-				class="form-control me-2"
-				type="search"
-				placeholder="Enter Train Ticket No."
-				aria-label="Search"
-				name="enquiry"
-				required
-			/>
-			<button class="btn btn-success" type="submit" style="background-color: #3949ab">Enquire</button>
-		</form>
-	</div>
+<nav
+  class="navbar navbar-expand-lg navbar-light"
+  style="background-color: #f5f5f5"
+>
+  <div class="container-fluid">
+    <form class="d-flex mx-auto" action="/enquiry" method="post">
+      <input
+        class="form-control me-2"
+        type="search"
+        placeholder="Enter Train Ticket No."
+        aria-label="Search"
+        name="enquiry"
+        required
+      />
+      <button
+        class="btn btn-success"
+        type="submit"
+        style="background-color: #1565c0"
+      >
+        Enquire
+      </button>
+    </form>
+  </div>
 </nav>
 
 <div class="container" style="margin-top: 70px">
-	<div class="row">
-		<div class="col-sm-4">
-			<div class="card" id="card1">
-				<img src="{{url_for('static', filename='pers.jpg')}}" class="card-img-top" alt="not found" id="img1" />
-				<div class="card-body">
-					<div class="table-responsive">
-						<table class="table table-borderless" id="borderless" style="border-collapse: collapse">
-							<tbody>
-								<tr>
-									<th class="a1">Name</th>
-									<td class="b">{{session['user_name']}}</td>
-								</tr>
-								<tr>
-									<th class="a1">E-mail:</th>
-									<td class="b">{{session['user_email']}}</td>
-								</tr>
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="card animate__animated animate__zoomInUp" id="card1">
+        <img
+          src="{{url_for('static', filename='train.jpg')}}"
+          class="card-img-top"
+          id="img"
+          alt="image2"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Train</h5>
+          <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
+            {{data[0]}}
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card animate__animated animate__zoomInRight" id="card1">
+        <img
+          src="{{url_for('static', filename='station.jpg')}}"
+          class="card-img-top"
+          id="img"
+          alt="image1"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Station</h5>
+          <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
+            {{data[1]}}
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card animate__animated animate__zoomInLeft" id="card1">
+        <img
+          src="{{url_for('static', filename='about.jpg')}}"
+          class="card-img-top"
+          alt="not found"
+          id="img1"
+        />
 
-								<tr style="border-bottom: none">
-									<th class="a1">Phone:</th>
-									<td class="b">{{session['user_phone']}}</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div style="text-align: center">
-						<a href="/user_profile_update"
-							><button type="button" class="btn btn-primary" id="button1">Update</button></a
-						>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-4">
-			<div class="card" id="card1">
-				<img src="{{url_for('static', filename='train.jpg')}}" class="card-img-top" id="img" alt="image2" />
-				<div class="card-body">
-					<h5 class="card-title">Train</h5>
-					<h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">{{data[0]}}</h1>
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-4">
-			<div class="card" id="card1">
-				<img src="{{url_for('static', filename='station.jpg')}}" class="card-img-top" id="img" alt="image1" />
-				<div class="card-body">
-					<h5 class="card-title">Station</h5>
-					<h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">{{data[1]}}</h1>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="card-body">
+          <h5 class="card-title">About</h5>
+          <p class="card-text">
+            This Website Helps You To Book Or Reserve The Train Seats Through
+            Online Mode and The User Interface Is User Friendly
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <br /><br />
 

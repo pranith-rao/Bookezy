@@ -1,4 +1,4 @@
-{% extends "station_layout.html" %}
+{% extends "user_layout.html" %}
 <!--title part-->
 {% block title %}My Profile{% endblock %}
 <!--head part-->
@@ -59,7 +59,7 @@
     <div class="col-sm-5">
       <div class="card">
         <img
-          src="static/master1.jpg"
+          src="static/pers.jpg"
           class="card-img-top"
           alt="profile"
           style="height: 270px"
@@ -68,21 +68,21 @@
           <p class="card-text"></p>
           <p style="margin-bottom: 10px">
             <i class="fa fa-user" aria-hidden="true"></i
-            >&nbsp;&nbsp;{{session['admin_name']}}
+            >&nbsp;&nbsp;{{session['user_name']}}
           </p>
           <p style="margin-bottom: 8px">
             <i class="fa fa-phone" aria-hidden="true"></i
-            >&nbsp;&nbsp;{{session['admin_phone']}}
+            >&nbsp;&nbsp;{{session['user_phone']}}
           </p>
           <p>
             <i class="fa fa-envelope" aria-hidden="true"></i
-            >&nbsp;&nbsp;{{session['admin_email']}}
+            >&nbsp;&nbsp;{{session['user_email']}}
           </p>
           <br />
           <h4><span> Click Here To Update</span></h4>
           <br />
           <div style="text-align: center">
-            <a href="/station_profile_update"
+            <a href="/user_profile_update"
               ><button type="button" class="btn btn-primary" id="button1">
                 Update
               </button></a

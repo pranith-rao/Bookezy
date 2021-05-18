@@ -38,8 +38,7 @@
 </style>
 {% endblock %}
 <!--content part-->
-{% block content %}
-{% if data %}
+{% block content %} {% if data %}
 <div class="table-responsive">
   <table class="table">
     <thead>
@@ -61,21 +60,23 @@
         <td>{{i.date}}</td>
         <td>{{i.seat_no}}</td>
         <td>
-          <a href="/cancel/{{i.id}}"><button class="btn btn-danger" type="submit">
-            <i class="fa fa-times" aria-hidden="true"></i>
-          </button></a>
+          <a href="/cancel/{{i.id}}"
+            ><button class="btn btn-danger" type="submit">
+              <i class="fa fa-times" aria-hidden="true"></i></button
+          ></a>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-
 </div>
 {% else %}
-			<p style="color:red;text-align:center;font-size:30px;">No Tickets Yet</p>
-		{% endif %}
-
-
-{% endblock %}
-
-
+<script class="text-uppercase">
+  swal({
+    title: "Error!",
+    text: "NO TICKETS YET",
+    icon: "error",
+    button: "OK"
+  });
+</script>
+{% endif %} {% endblock %}
