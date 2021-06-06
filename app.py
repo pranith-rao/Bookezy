@@ -6,11 +6,16 @@ from passlib.hash import sha256_crypt
 from flask_mail import Mail,Message
 import random
 import datetime
+from authlib.integrations.flask_client import OAuth
+from datetime import timedelta
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(16)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///rail_db.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config['SESSION_COOKIE_NAME'] = 'login-system'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -18,6 +23,22 @@ app.config['MAIL_USERNAME'] = "bookezy13@gmail.com"
 app.config['MAIL_PASSWORD'] = "pradeep13"
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+
+oauth = OAuth(app)
+google = oauth.register(
+    name='google',
+    client_id="809488703986-846t429braorv3rekt1rrm7fm2ds4eqf.apps.googleusercontent.com",
+    client_secret='kSNFX4EsFm86SOjvbqXfkD8p',
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params=None,
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
+    # This is only needed if using openId to fetch user info
+    client_kwargs={'scope': 'openid email profile'},
+)
+
 
 db = SQLAlchemy(app)
 mail = Mail(app)
@@ -33,7 +54,7 @@ class Users(db.Model):
 
 
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<User %r>' % self.email
 
 class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -315,6 +336,7 @@ def mainadmin_log():
         password = request.form['password']
         if email == 'mainadmin@gmail.com' and password == 'pradeep123':
             session['mainadmin'] = True
+            session['mainadmin_name'] = email
             flash('Login Successfull','success')
             return redirect(url_for('admdash'))
         else:
@@ -1245,6 +1267,48 @@ def update_station_profile(id):
     else:
         flash("Session Expired","error")
         return redirect(url_for('stationlog'))
+
+@app.route('/login_google')
+def login_google():
+    google = oauth.create_client('google')  # create the google oauth client
+    redirect_uri = url_for('authorize', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+
+@app.route('/authorize')
+def authorize():
+    google = oauth.create_client('google')  # create the google oauth client
+    token = google.authorize_access_token()  # Access token from google (needed to get user info)
+    resp = google.get('userinfo')  # userinfo contains stuff u specificed in the scrope
+    user_info = resp.json()
+    user = oauth.google.userinfo()  # uses openid endpoint to fetch user info
+    # Here you use the profile/user data that you got and query your database find/register the user
+    # and set ur own data in the session not the profile from google
+    hash_pass = sha256_crypt.hash(user_info['email'])
+    response = Users.query.filter_by(email=user_info['email']).first()
+    if response:
+        session['user'] = True
+        session['user_id'] = response.id
+        session['user_name'] = response.name
+        session['user_email'] = response.email
+        session['user_phone'] = response.phone
+        flash('You were successfully logged in', "success")
+        return redirect(url_for("userdash"))
+    else:
+        phone = random.randint(9999999,9999999999)
+        user = Users(name=user_info['name'], email=user_info['email'], phone=phone, address="address", password=hash_pass)
+        db.session.add(user)
+        db.session.commit()
+        respons = Users.query.filter_by(email=user.email).first()
+        session['user'] = True
+        session['user_id'] = respons.id
+        session['user_name'] = respons.name
+        session['user_email'] = respons.email
+        session['user_phone'] = respons.phone
+
+        session.permanent = True  # make the session permanant so it keeps existing after broweser gets closed
+        flash('Update your phone and address', "success")
+        return redirect(url_for("user_profile_update"))
 
 if __name__ == '__main__':
     app.run(debug=True,port=9876)

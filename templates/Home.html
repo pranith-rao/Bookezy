@@ -161,6 +161,85 @@
             Login
           </a>
         </li>
+{% if 'user_name' in session %}
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle active"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="fa fa-user"></i>&nbsp;&nbsp;{{session['user_name']}}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li style="margin-top: 5px">
+              <a class="dropdown-item" href="/userdash"
+                ><i class="fa fa-sign-in"></i>&nbsp;&nbsp;Dashboard</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" href="/logout"
+                ><i class="fa fa-user-plus"></i>&nbsp;&nbsp;Logout</a
+              >
+            </li>
+          </ul>
+        </li>
+        {% elif 'mainadmin' in session %}
+<li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle active"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="fa fa-user"></i>&nbsp;&nbsp;{{session['mainadmin_name']}}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li style="margin-top: 5px">
+              <a class="dropdown-item" href="/admdash"
+                ><i class="fa fa-sign-in"></i>&nbsp;&nbsp;Dashboard</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" href="/logout"
+                ><i class="fa fa-user-plus"></i>&nbsp;&nbsp;Logout</a
+              >
+            </li>
+          </ul>
+        </li>
+        {% elif 'admin' in session %}
+<li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle active"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="fa fa-user"></i>&nbsp;&nbsp;{{session['admin_name']}}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li style="margin-top: 5px">
+              <a class="dropdown-item" href="/stationdash"
+                ><i class="fa fa-sign-in"></i>&nbsp;&nbsp;Dashboard</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" href="/logout"
+                ><i class="fa fa-user-plus"></i>&nbsp;&nbsp;Logout</a
+              >
+            </li>
+          </ul>
+        </li>
+{% else %}
 
         <li class="nav-item dropdown">
           <a
@@ -187,6 +266,7 @@
             </li>
           </ul>
         </li>
+        {% endif %}
         <li class="nav-item">
           <a
             class="nav-link active"
