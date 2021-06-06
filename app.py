@@ -1268,13 +1268,14 @@ def update_station_profile(id):
         flash("Session Expired","error")
         return redirect(url_for('stationlog'))
 
+#login with google
 @app.route('/login_google')
 def login_google():
     google = oauth.create_client('google')  # create the google oauth client
     redirect_uri = url_for('authorize', _external=True)
     return google.authorize_redirect(redirect_uri)
 
-
+#register with google
 @app.route('/authorize')
 def authorize():
     google = oauth.create_client('google')  # create the google oauth client
@@ -1296,7 +1297,7 @@ def authorize():
         return redirect(url_for("userdash"))
     else:
         phone = random.randint(9999999,9999999999)
-        user = Users(name=user_info['name'], email=user_info['email'], phone=phone, address="address", password=hash_pass)
+        user = Users(name=user_info['name'], email=user_info['email'], phone=phone, address="Enter your address here", password=hash_pass)
         db.session.add(user)
         db.session.commit()
         respons = Users.query.filter_by(email=user.email).first()
@@ -1305,7 +1306,6 @@ def authorize():
         session['user_name'] = respons.name
         session['user_email'] = respons.email
         session['user_phone'] = respons.phone
-
         session.permanent = True  # make the session permanant so it keeps existing after broweser gets closed
         flash('Update your phone and address', "success")
         return redirect(url_for("user_profile_update"))
