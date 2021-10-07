@@ -1,0 +1,72 @@
+{% extends "user_layout.html" %}
+<!--title part-->
+{% block title %}Available Train list{% endblock %}
+<!--head part-->
+{% block head %} {{ super() }}
+<style>
+	table {
+		font-family: 'Roboto' sans-serif;
+		border-collapse: collapse;
+		width: 100%;
+	}
+	table tr:nth-child(even) {
+		background-color: #eeeeee;
+	}
+	.table th {
+		padding-top: 14px;
+		padding-bottom: 14px;
+		text-align: left;
+		background-color: #1976d2;
+		color: white;
+		letter-spacing: 0.5px;
+		user-select: none;
+		border-right: 0.5px solid #bbdefb;
+		font-family: Bahnschrift SemiBold;
+	}
+	table td {
+		border-right: 0.5px solid #bbdefb;
+		height: 70px;
+	}
+	table td,
+	table th {
+		border-bottom: 0.5px solid #bbdefb;
+	}
+	table tr:hover {
+		background-color: #e3f2fd;
+		cursor: pointer;
+	}
+</style>
+{% endblock %}
+<!--content part-->
+{% block content %}
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Train ID</th>
+				<th scope="col">Train Name</th>
+				<th scope="col">Seats</th>
+				<th scope="col">From</th>
+				<th scope="col">Through</th>
+				<th scope="col">To</th>
+				<th scope="col">Arrival Time</th>
+				<th scope="col">Departure Time</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in data %}
+			<tr>
+				<td>{{i.id}}</td>
+				<td>{{i.train_name}}</td>
+				<td>{{i.seats}}</td>
+				<td>{{i.from_location}}</td>
+				<td>{{i.through_route}}</td>
+				<td>{{i.to_location}}</td>
+				<td>{{i.arrival_time}}</td>
+				<td>{{i.departure_time}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "Admin-layout.html" %}
+<!--title part-->
+{% block title %}Station list{% endblock %}
+<!--head part-->
+{% block head %} {{ super() }}
+<style>
+	table {
+		font-family: 'Roboto' sans-serif;
+		border-collapse: collapse;
+		width: 100%;
+	}
+	table tr:nth-child(even) {
+		background-color: #eeeeee;
+	}
+	.table th {
+		padding-top: 14px;
+		padding-bottom: 14px;
+		text-align: left;
+		background-color: #1976d2;
+		color: white;
+		letter-spacing: 0.5px;
+		user-select: none;
+		border-right: 0.5px solid #bbdefb;
+		font-family: Bahnschrift SemiBold;
+	}
+	table td {
+		border-right: 0.5px solid #bbdefb;
+		height: 70px;
+	}
+	table td,
+	table th {
+		border-bottom: 0.5px solid #bbdefb;
+	}
+	table tr:hover {
+		background-color: #e3f2fd;
+		cursor: pointer;
+	}
+</style>
+{% endblock %}
+<!--content part-->
+{% block content %}
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Stat.. Name</th>
+				<th scope="col">Stat.. Location</th>
+				<th scope="col">Stat.. pincode</th>
+				<th scope="col">Adm.. Name</th>
+				<th scope="col">Adm.. Email</th>
+				<th scope="col">Adm.. Phone</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for i in data %}
+			<tr>
+				<td>{{i.station_name}}</td>
+				<td>{{i.station_location}}</td>
+				<td>{{i.station_pincode}}</td>
+				<td>{{i.name}}</td>
+				<td>{{i.email}}</td>
+				<td>{{i.phone}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}

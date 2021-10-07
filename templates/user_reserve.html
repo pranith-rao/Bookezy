@@ -1,0 +1,144 @@
+{% extends "user_layout.html" %}
+<!--title part-->
+{% block title %}Reservation {% endblock %}
+<!--head part-->
+{% block head %} {{ super() }}
+<style>
+	.card {
+		margin-top: 40px;
+	}
+
+	#button1 {
+		margin-top: 20px;
+		width: 190px;
+		border-radius: 50px;
+		background-color: #1565c0;
+		color: white;
+		margin-bottom: 20px;
+	}
+	#adm-tab {
+		font-family: Bahnschrift SemiBold;
+		text-decoration: none;
+		color: #7e57c2;
+	}
+	.card-title {
+		text-align: center;
+		font-family: Bahnschrift SemiBold;
+		font-size: 25px;
+	}
+	h4 {
+		width: 100%;
+		text-align: center;
+		border-bottom: 1px solid #000;
+		line-height: 0.1em;
+		margin: 10px 0 20px;
+		font-family: Bahnschrift SemiBold;
+	}
+
+	h4 span {
+		background: #fff;
+		padding: 0 10px;
+	}
+</style>
+{% endblock %}
+<!--content part-->
+{% block content %}
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-sm-6">
+			<div class="card">
+				<div class="card-header">Reserve Seats</div>
+				<div class="card-body">
+					<div class="container">
+						<form action="/reserve_ticket" method="post">
+							<div class="mb-3" style="margin-top: 10px">
+								<label class="form-label">Name</label>
+								<input
+									type="text"
+									class="form-control"
+									name="name"
+									value="{{session['user_name']}}"
+									readonly
+								/>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Email </label>
+								<input
+									type="email"
+									class="form-control"
+									name="email"
+									value="{{session['user_email']}}"
+									readonly
+								/>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Train ID </label>
+								<select class="form-select" aria-label="Default select example" name="train" required>
+									{% if train %} {% for i in train %}
+									<option>{{i.train_id}}</option>
+									{% endfor %} {% else %}
+									<option>Currently not accepting</option>
+									{% endif %}
+								</select>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">To Location </label>
+								<select
+									class="form-select"
+									aria-label="Default select example"
+									name="location"
+									required
+								>
+									{% if location %} {% for i in location %}
+									<option>{{i.to_location}}</option>
+									{% endfor %} {% else %}
+									<option>Currently not accepting</option>
+									{% endif %}
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label class="form-label">Total Seats </label>
+								<input
+									type="number"
+									class="form-control"
+									placeholder="No of seats"
+									name="seat"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Day Of Travel </label>
+								<input type="date" class="form-control" name="travel" required />
+							</div>
+							<br />
+							<h4><span>Additional Details</span></h4>
+							<br />
+							<div class="mb-3">
+								<label class="form-label">Total child-(Below 12)</label>
+								<input type="number" class="form-control" name="child" required />
+							</div>
+							<div class="mb-3">
+								<label class="form-label">Total Senior Citizen-(above 60)</label>
+								<input type="number" class="form-control" name="senior" required />
+								<div class="form-text">If There Then Enter Count Otherwise Enter 0</div>
+							</div>
+							<div class="row justify-content-center">
+								{% if train and location %}
+								<button type="submit" id="button1" class="btn btn-primary">Reserve</button>
+								{% else %}
+								<button type="submit" id="button1" class="btn btn-primary" disabled>
+									Not Accepting
+								</button>
+								{% endif %}
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<br /><br />
+
+{% endblock %}
