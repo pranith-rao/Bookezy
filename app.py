@@ -3,11 +3,11 @@ from flask.wrappers import Request
 from flask_sqlalchemy import SQLAlchemy
 import os,random,re
 from passlib.hash import sha256_crypt
-from flask_mail import Mail,Message
 import random
 import datetime
 from authlib.integrations.flask_client import OAuth
 from datetime import timedelta
+import smtplib
 
 
 app = Flask(__name__)
@@ -17,31 +17,44 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SESSION_COOKIE_NAME'] = 'login-system'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=5)
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = "bookezy13@gmail.com"
-app.config['MAIL_PASSWORD'] = "pradeep13"
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+
+def send_email(recipient, subject, body):
+    FROM = 'bookezy13@gmail.com'
+    TO = recipient if isinstance(recipient, list) else [recipient]
+    SUBJECT = subject
+    TEXT = body
+
+    message = """From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.ehlo()
+        server.starttls()
+        server.login('bookezy13@gmail.com', 'zfvuilzftykcolax')
+        server.sendmail(FROM, TO, message)
+        server.close()
+    except:
+        flash("Check your internet connection","error")
+        return redirect(url_for('home'))
 
 oauth = OAuth(app)
 google = oauth.register(
     name='google',
-    client_id="809488703986-846t429braorv3rekt1rrm7fm2ds4eqf.apps.googleusercontent.com",
-    client_secret='kSNFX4EsFm86SOjvbqXfkD8p',
+    client_id="560050775750-4cas9nkl12p9g4t6sri8knmd8a8rukfc.apps.googleusercontent.com",
+    client_secret='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',
     access_token_url='https://accounts.google.com/o/oauth2/token',
     access_token_params=None,
     authorize_url='https://accounts.google.com/o/oauth2/auth',
     authorize_params=None,
     api_base_url='https://www.googleapis.com/oauth2/v1/',
     userinfo_endpoint='https://openidconnect.googleapis.com/v1/userinfo',
+    jwks_uri="https://www.googleapis.com/oauth2/v3/certs",
     # This is only needed if using openId to fetch user info
-    client_kwargs={'scope': 'openid email profile'},
+    client_kwargs={'scope': 'openid email profile', 'jwks_uri': 'https://www.googleapis.com/oauth2/v3/certs'},
 )
 
 
 db = SQLAlchemy(app)
-mail = Mail(app)
 
 class Users(db.Model):
     id = db.Column(db.Integer,primary_key=True)
@@ -368,9 +381,7 @@ def reg_station():
                         station = Station(station_name = name_station, station_location = station_location, station_pincode = station_code, name = admin_name, email = email, phone = phno, password = hash_pass)
                         db.session.add(station)
                         db.session.commit()
-                        msg = Message("Registration Confirmation",sender="bookezy13@gmail.com",recipients=[email])
-                        msg.body = "Your station was registered successfully.Use your email and phone number as password for login. Remember to change your password after your first login"
-                        mail.send(msg)
+                        send_email(email,"Registration Confirmation","Your station was registered successfully.Use your email and phone number as password for login. Remember to change your password after your first login")
                         flash('Station registered successfully','success')
                         return redirect(url_for('admdash'))
                     else:
@@ -436,9 +447,8 @@ def admin_send_otp():
             session['email'] = email_check.email
             otp = random.randint(000000,999999)
             session['otp'] = otp
-            msg = Message('OTP for Password change',sender="bookezy13@gmail.com",recipients=[email])
-            msg.body = "Dear User, your verification code is: " + str(otp)
-            mail.send(msg)
+            body = "Dear "+ str(email_check.name) +", your verification code is: " + str(otp)
+            send_email(email,'OTP for Station Admin Password Recovery',body)
             flash("OTP sent","success")
             return redirect(url_for("station_otp"))
         else:
@@ -651,9 +661,8 @@ def book_ticket():
                         users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=t_number,train_id=int(train_id),date=date,child=int(child),old=int(senior),status=1)
                         db.session.add(users)
                         db.session.commit()
-                        msg = Message("Ticket Confirmation",sender="bookezy13@gmail.com",recipients=[email])
-                        msg.body = "Your ticket was booked successfully. Your ticket number is: "+ str(t_number)
-                        mail.send(msg)
+                        body = "Your ticket was booked successfully. Your ticket number is: "+ str(t_number)
+                        send_email(email,"Ticket Confirmation",body)
                         flash("Ticket Booked Successfully","success")
                         return redirect(url_for("userdash"))
                 else:
@@ -755,9 +764,7 @@ def user_register():
                 user = Users(name=name,email=email,phone=phone,address=address,password=hash_pass)
                 db.session.add(user)
                 db.session.commit()
-                msg = Message("Registration Confirmation",sender="bookezy13@gmail.com",recipients=[email])
-                msg.body = "Thank you for registering on our website.Hope you have a good experience"
-                mail.send(msg)
+                send_email(email,"Registration Confirmation","Thank you for registering on our website.Hope you have a good experience")
                 flash('Registeration successfully','success')
                 return redirect(url_for('userlog'))
             else:
@@ -897,9 +904,8 @@ def reserve_ticket():
                 users = Book(name=name,email=email,location=location,seat_no=tot_seats,ticket_no=t_number,train_id=int(train_id),date=date,child=int(child),old=int(senior),status=0)
                 db.session.add(users)
                 db.session.commit()
-                msg = Message('Ticket Reservation',sender="bookezy13@gmail.com",recipients=[email])
-                msg.body = "Your reservation request has been sent. Use this ticket number "+str(t_number)+" to enquire the status of your reservation"
-                mail.send(msg)
+                body = "Your reservation request has been sent. Use this ticket number "+str(t_number)+" to enquire the status of your reservation"
+                send_email(email,'Ticket Reservation',body)
                 flash("Request sent for reservation","success")
                 return redirect(url_for("userdash"))
             else:
@@ -946,9 +952,8 @@ def reserve_success(id):
                 db.session.commit()
                 update_status.status = 1
                 db.session.commit()
-                msg = Message("Reservation Update",sender="bookezy13@gmail.com",recipients=[email])
-                msg.body = "Your reservation is successfully. Ticket number is "+str(t_number)
-                mail.send(msg)
+                body = "Your reservation is successfully. Ticket number is "+str(t_number)
+                send_email(email,"Reservation Update",body)
                 flash("Ticket Booked", "success")
                 return redirect(url_for("booklist"))
         else:
@@ -967,9 +972,8 @@ def reserve_error(id):
         t_number = del_ticket.ticket_no
         db.session.delete(del_ticket)
         db.session.commit()
-        msg = Message("Reservation Update",sender="bookezy13@gmail.com",recipients=[email])
-        msg.body = "Your reservation of ticket number "+str(t_number)+" is unsuccessfully. It is because no seats were available or no.of seats available are less than the no.of seats required to book your ticket."
-        mail.send(msg)
+        body = "Your reservation of ticket number "+str(t_number)+" is unsuccessfully. It is because no seats were available or no.of seats available are less than the no.of seats required to book your ticket."
+        send_email(email,"Reservation Update",body)
         flash("Reservation Cancelled","error")
         return redirect(url_for("booklist"))
     else:
@@ -1028,9 +1032,8 @@ def user_send_otp():
             session['email'] = email_check.email
             otp = random.randint(000000,999999)
             session['otp'] = otp
-            msg = Message('OTP for Password change',sender="bookezy13@gmail.com",recipients=[email])
-            msg.body = "Dear User, your verification code is: " + str(otp)
-            mail.send(msg)
+            body = "Dear User, your verification code is: " + str(otp)
+            send_email(email,'OTP for Password change',body)
             flash("OTP sent","success")
             return redirect(url_for("user_otp"))
         else:
@@ -1119,12 +1122,12 @@ def add_seat_data():
     if 'admin' in session:
         if request.method == 'POST':
             date = request.form['date']
-            seats = request.form['seat']
+            seat = request.form['seat']
             train_id = request.form['train']
-            seats = Seats(train_id=train_id,date=date, seats_count=seats)
+            seats = Seats(train_id=train_id,date=date, seats_count=seat)
             db.session.add(seats)
             db.session.commit()
-            flash(str(seats)+" Added Successfully","success")
+            flash(str(seat)+" Seats Added Successfully","success")
             return redirect(url_for("stationdash"))
         else:
             flash('Unauthorized access', 'error')

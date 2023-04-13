@@ -32,6 +32,7 @@ from .exceptions import NoSuchOption
 from .exceptions import UsageError
 
 if t.TYPE_CHECKING:
+    import typing_extensions as te
     from .core import Argument as CoreArgument
     from .core import Context
     from .core import Option as CoreOption
@@ -62,7 +63,7 @@ def _unpack_args(
     rv: t.List[t.Union[str, t.Tuple[t.Optional[str], ...], None]] = []
     spos: t.Optional[int] = None
 
-    def _fetch(c: t.Deque[V]) -> t.Optional[V]:
+    def _fetch(c: "te.Deque[V]") -> t.Optional[V]:
         try:
             if spos is None:
                 return c.popleft()
@@ -232,7 +233,9 @@ class Argument:
                     )
                 )
 
-        if self.nargs == -1 and self.obj.envvar is not None:
+        if self.nargs == -1 and self.obj.envvar is not None and value == ():
+            # Replace empty tuple with None so that a value from the
+            # environment may be tried.
             value = None
 
         state.opts[self.dest] = value  # type: ignore
@@ -297,7 +300,7 @@ class OptionParser:
         """Adds a new option named `dest` to the parser.  The destination
         is not inferred (unlike with optparse) and needs to be explicitly
         provided.  Action can be any of ``store``, ``store_const``,
-        ``append``, ``appnd_const`` or ``count``.
+        ``append``, ``append_const`` or ``count``.
 
         The `obj` can be used to identify the option in the order list
         that is returned from the parser.
