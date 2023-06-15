@@ -55,8 +55,8 @@ To set up Google Auth for user registration and login:
 2. Update their profile as the Google auth doesn't return their phone number and address.
 3. Change their password if needed.
 4. View the list of available trains.
-5. Book tickets if the train is available to their preferred location on their preferred date.
-6. Reserve tickets if the train is not available to their preferred location on their preferred date.
+5. Book tickets if the train is available to their preferred location on their preferred date and receive booking notification via email.
+6. Reserve tickets if the train is not available to their preferred location on their preferred date and receive reservation update notifications via email.
 7. View their booking history and cancel tickets only before 24 hours of their travel time.
 8. Status of their reservation.
 9. Recover their password by using the forgot password on the login page.
