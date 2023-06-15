@@ -1,6 +1,6 @@
 {% extends "station_layout.html" %}
 <!--title part-->
-{% block title %}Station dash{% endblock %}
+{% block title %}Station Dashboard{% endblock %}
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
@@ -53,22 +53,6 @@
 <div class="container" style="margin-top: 70px">
   <div class="row">
     <div class="col-sm-4">
-      <div class="card animate__animated animate__zoomInLeft" id="card1">
-        <img
-          src="{{url_for('static', filename='station.jpg')}}"
-          class="card-img-top"
-          id="img"
-          alt="image1"
-        />
-        <div class="card-body">
-          <h5 class="card-title">Station</h5>
-          <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
-            {{data[1]}}
-          </h1>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-4">
       <div class="card animate__animated animate__zoomInUp" id="card1">
         <img
           src="{{url_for('static', filename='train.jpg')}}"
@@ -77,9 +61,25 @@
           alt="image2"
         />
         <div class="card-body">
-          <h5 class="card-title">Train</h5>
+          <h5 class="card-title">Trains</h5>
           <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
             {{data[0]}}
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card animate__animated animate__zoomInLeft" id="card1">
+        <img
+          src="{{url_for('static', filename='schedule_train.jpeg')}}"
+          class="card-img-top"
+          id="img"
+          alt="image1"
+        />
+        <div class="card-body">
+          <h5 class="card-title">Scheduled Trains</h5>
+          <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
+            {{data[1]}}
           </h1>
         </div>
       </div>
@@ -93,7 +93,7 @@
           alt="..."
         />
         <div class="card-body">
-          <h5 class="card-title">Passenger</h5>
+          <h5 class="card-title">Passengers</h5>
           <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
             {{data[2]}}
           </h1>

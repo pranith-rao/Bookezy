@@ -1,6 +1,6 @@
 {% extends "station_layout.html" %}
 <!--title part-->
-{% block title %}Train list{% endblock %}
+{% block title %}Scheduled Trains{% endblock %}
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
@@ -44,24 +44,16 @@
     <thead>
       <tr>
         <th scope="col">Train ID</th>
-        <th scope="col">Train Name</th>
-        <th scope="col">Total No.of Seats</th>
-        <th scope="col">From</th>
-        <th scope="col">To</th>
-        <th scope="col">Arrival Time</th>
-        <th scope="col">Departure Time</th>
+        <th scope="col">Remaining No.of Seats</th>
+        <th scope="col">Date of Travel</th>
       </tr>
     </thead>
     <tbody>
       {% for i in data %}
       <tr>
-        <td>{{i.id}}</td>
-        <td>{{i.train_name}}</td>
-        <td>{{i.seats}}</td>
-        <td>{{i.from_location}}</td>
-        <td>{{i.to_location}}</td>
-        <td>{{i.arrival_time}}</td>
-        <td>{{i.departure_time}}</td>
+        <td>{{i.train_id}}</td>
+        <td>{{i.seats_count}}</td>
+        <td>{{i.date}}</td>
       </tr>
       {% endfor %}
     </tbody>

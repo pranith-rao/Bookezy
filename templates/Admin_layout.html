@@ -18,6 +18,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
+
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <title>{% block title %}{% endblock %} - Bookezy</title>
     {% endblock %}
@@ -126,15 +127,7 @@
         font-size: 16px;
         font-family: Verdana, Geneva, Tahoma, sans-serif;
       }
-      #ab {
-        color: black;
-        border-bottom: none;
-        width: 240px;
-        height: 70px;
-      }
-      #ab:hover {
-        background-color: white;
-      }
+
       .card-header {
         background-color: #1976d2;
         text-align: center;
@@ -148,15 +141,6 @@
       .card {
         border: solid 1px white;
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
-      }
-      .card-header {
-        background-color: #1976d2;
-        text-align: center;
-        font-weight: 500;
-        color: white;
-        font-size: 23px;
-        letter-spacing: 0.3px;
-        font-family: Bahnschrift SemiBold;
       }
     </style>
   </head>
@@ -178,12 +162,12 @@
         text: "{{msg|upper}}",
         icon: "success",
         button: "OK",
-        timer: 3000
+        timer: 1500
       });
     </script>
     {% endif %} {% endfor %} {% endif %} {% endwith %}
     <div id="mySidenav" class="sidenav">
-      <header>Station</header>
+      <header>Admin</header>
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"
         ><button class="btn btn-infos" id="close">
           <i class="fa fa-times"></i></button
@@ -191,77 +175,20 @@
 
       <ul class="list-unstyled components mb-5">
         <li class="active">
-          <a href="/stationdash" class="a" style="background-color: #1565c0"
+          <a href="/admdash" class="a" style="background-color: #1565c0"
             ><span class="fa fa-qrcode"></span>Dashboard</a
           >
         </li>
         <li>
-          <a href="/station_profile" class="a"
-            ><span class="fa fa-user"></span>My Profile</a
+          <a href="/stationreg" class="a"
+            ><span class="fa fa-th"></span>Station Form</a
           >
-        </li>
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle active"
-            href="#"
-            id="navbarDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="fa fa-train"></i>&nbsp;&nbsp;Train
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li style="margin-top: 5px">
-              <a class="dropdown-item" href="/trainreg" id="ab"
-                ><i class="fa fa-th"></i>&nbsp;&nbsp;Form</a
-              >
-            </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li>
-              <a class="dropdown-item" href="/trainlist" id="ab"
-                ><i class="fa fa-list"></i>&nbsp;&nbsp;List</a
-              >
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle active"
-            href="#"
-            id="navbarDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="fa fa-train"></i>&nbsp;&nbsp;Schedule Train
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li style="margin-top: 5px">
-              <a class="dropdown-item" href="/add_seat" id="ab"
-                ><i class="fa fa-plus"></i>&nbsp;Form</a
-              >
-            </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li>
-              <a class="dropdown-item" href="/scheduledtrainlist" id="ab"
-                ><i class="fa fa-list"></i>&nbsp;Scheduled Trains</a
-              >
-            </li>
-          </ul>
         </li>
         <li>
-          <a href="/booklist" class="a"
-            ><span class="fa fa-list"></span>Reservation List</a
+          <a href="/stationlist" class="a"
+            ><span class="fa fa-list"></span>Station List</a
           >
         </li>
-
-        <li>
-          <a href="/changepass_station" class="a"
-            ><span class="fa fa-key"></span>Change Password</a
-          >
-        </li>
-
         <li>
           <a href="/logout" class="a"
             ><span class="fa fa-sign-out"></span>Logout</a
@@ -277,7 +204,7 @@
     >
       <div class="container-fluid">
         <a class="navbar-brand" href="#"
-          ><h3 id="text1">Station <span>Dashboard</span></h3></a
+          ><h3 id="text1">Admin <span>Dashboard</span></h3></a
         >
 
         <button

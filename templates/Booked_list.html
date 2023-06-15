@@ -49,8 +49,6 @@
         <th scope="col">Train ID</th>
         <th scope="col">Location</th>
         <th scope="col">Date</th>
-        <th scope="col">No of childrens</th>
-        <th scope="col">No of senior citizens</th>
         <th scope="col">Accept</th>
         <th scope="col">Reject</th>
       </tr>
@@ -64,8 +62,6 @@
         <td>{{i.train_id}}</td>
         <td>{{i.location}}</td>
         <td>{{i.date}}</td>
-        <td>{{i.child}}</td>
-        <td>{{i.old}}</td>
         <td>
           <a href="/reserve_success/{{i.id}}">
             <button class="btn btn-success" type="submit">
@@ -87,9 +83,11 @@
 <script class="text-uppercase">
   swal({
     title: "Error!",
-    text: "NO RESERVATION YET",
+    text: "NO RESERVATIONS YET",
     icon: "error",
     button: "OK"
+  }).then(function() {
+    window.location.href = "http://127.0.0.1:9876/stationdash";
   });
 </script>
 {% endif %} {% endblock %}

@@ -1,6 +1,6 @@
 {% extends "user_layout.html" %}
 <!--title part-->
-{% block title %}User dash{% endblock %}
+{% block title %}User Dashboard{% endblock %}
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
@@ -26,6 +26,11 @@
     background-color: #1565c0;
     color: white;
     margin-bottom: 5px;
+  }
+  .enquire {
+    margin-top: 20px;
+    margin-bottom: -30px;
+    width: 450px;
   }
   @media (min-width: 300px) and (max-width: 350px) {
     #card1 {
@@ -68,7 +73,7 @@
   style="background-color: #f5f5f5"
 >
   <div class="container-fluid">
-    <form class="d-flex mx-auto" action="/enquiry" method="post">
+    <form class="d-flex mx-auto enquire" action="/enquiry" method="post">
       <input
         class="form-control me-2"
         type="search"
@@ -99,7 +104,7 @@
           alt="image2"
         />
         <div class="card-body">
-          <h5 class="card-title">Train</h5>
+          <h5 class="card-title">Trains</h5>
           <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
             {{data[0]}}
           </h1>
@@ -109,13 +114,13 @@
     <div class="col-sm-4">
       <div class="card animate__animated animate__zoomInRight" id="card1">
         <img
-          src="{{url_for('static', filename='station.jpg')}}"
+          src="{{url_for('static', filename='ticket.jpeg')}}"
           class="card-img-top"
           id="img"
           alt="image1"
         />
         <div class="card-body">
-          <h5 class="card-title">Station</h5>
+          <h5 class="card-title">Tickets Booked</h5>
           <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
             {{data[1]}}
           </h1>

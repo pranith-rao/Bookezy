@@ -1,6 +1,6 @@
-{% extends "Admin-layout.html" %}
+{% extends "Admin_layout.html" %}
 <!--title part-->
-{% block title %}Admin dash{% endblock %}
+{% block title %}Admin Dashoard{% endblock %}
 <!--head part-->
 {% block head %} {{ super() }}
 <style>
@@ -69,31 +69,6 @@
       </div>
     </div>
     <div class="col-sm-4">
-      <div class="card animate__animated animate__zoomInUp" id="card1">
-        <img
-          src="{{url_for('static', filename='train.jpg')}}"
-          class="card-img-top"
-          id="img"
-          alt="image2"
-        />
-        <div class="card-body">
-          <h5 class="card-title">Train</h5>
-          <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
-            {{data[0]}}
-          </h1>
-        </div>
-      </div>
-    </div>
-    <!--<div class="col-sm-3">
-      <div class="card" id="card1">
-        <img src="{{url_for('static', filename='passenge1.jpg')}}"id="img" class="card-img-top" alt="...">
-        <div class="card-body" >
-          <h5 class="card-title">Passenger </h5>
-          <h1 style="text-align:center;margin-top:20px;margin-bottom: 20px;">10</h1>
-        </div>
-      </div>
-    </div>-->
-    <div class="col-sm-4">
       <div class="card animate__animated animate__zoomInRight" id="card1">
         <img
           src="{{url_for('static', filename='master.jpg')}}"
@@ -102,10 +77,28 @@
           alt="imag e2"
         />
         <div class="card-body">
-          <h5 class="card-title">Station Admin</h5>
+          <h5 class="card-title">Station Admins</h5>
           <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">
             {{data[2]}}
           </h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card animate__animated animate__zoomInLeft" id="card1">
+        <img
+          src="{{url_for('static', filename='about.jpg')}}"
+          class="card-img-top"
+          alt="not found"
+          id="img1"
+        />
+
+        <div class="card-body">
+          <h5 class="card-title">About</h5>
+          <p class="card-text">
+            This Website Helps You To Book Or Reserve The Train Seats Through
+            Online Mode and The User Interface Is User Friendly
+          </p>
         </div>
       </div>
     </div>
